@@ -1,3 +1,0 @@
-Pon aquí tu coche como:  car.zip
-Dentro del zip: el .fbx (o .glb) + las carpetas UV_01_carroceria … UV_09_Volante_02 con sus texturas.
-IMPORTANTE: GitHub no acepta archivos de más de 100 MB → exporta las texturas a 2K (2048 px) antes de comprimir.
