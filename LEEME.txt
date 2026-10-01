@@ -1,0 +1,5 @@
+Sube TODOS estos archivos sueltos a la raíz del repositorio (sin carpetas).
+Añade también, en la raíz:
+  car.zip   → tu coche (FBX + carpetas UV, texturas a 2K, menos de 100 MB)
+  reel.mp4  → tu demo reel (menos de 100 MB)
+Luego: Settings → Pages → main / (root) → Save.
