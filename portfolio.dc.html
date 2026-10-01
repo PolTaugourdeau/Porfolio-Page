@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="ds/styles.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<script src="ds/ds-bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;overflow-x:hidden;background:#11131d}
+a{color:var(--color-accent-300);text-decoration:none}
+a:hover{color:var(--color-accent-200)}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;color:var(--color-text);font-family:var(--font-body);overflow:hidden">
+<div style="position:absolute;top:-200px;left:-10%;width:70%;height:900px;background:radial-gradient(closest-side,color-mix(in oklch,oklch(0.62 0.16 290) 30%,transparent),transparent);pointer-events:none"></div>
+<div style="position:absolute;top:-120px;right:-15%;width:60%;height:800px;background:radial-gradient(closest-side,color-mix(in oklch,oklch(0.7 0.12 210) 22%,transparent),transparent);pointer-events:none"></div>
+
+<nav style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;padding:14px clamp(20px,5vw,72px);background:color-mix(in srgb,#11131d 72%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid color-mix(in srgb,var(--color-text) 7%,transparent)">
+  <a href="#hero" style="display:flex;align-items:center;gap:10px;color:var(--color-text);margin-right:auto">
+    <img src="uploads/imagenes/photo.jpg" alt="Pol Taugourdeau" style="width:32px;height:32px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #11131d,0 0 0 3px oklch(0.72 0.14 290)">
+    <span style="display:flex;flex-direction:column;line-height:1.15"><span style="font-size:14px;font-weight:600">Pol Taugourdeau</span><span style="font-size:11px;color:var(--color-neutral-500)">3D Artist</span></span>
+  </a>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:14px">
+    <a href="#services" style="color:var(--color-neutral-300)">Skills</a><a href="#portfolio" style="color:var(--color-neutral-300)">Portfolio</a><a href="#experience" style="color:var(--color-neutral-300)">Experience</a><a href="#about" style="color:var(--color-neutral-300)">About</a>
+  </div>
+  <a href="#contact" style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;font-size:14px;font-weight:500;color:#11131d;background:linear-gradient(90deg,oklch(0.78 0.13 290),oklch(0.8 0.11 210))">Contact <i class="ph ph-arrow-up-right"></i></a>
+</nav>
+
+<header id="hero" data-screen-label="Hero" style="position:relative;min-height:min(92vh,900px);display:flex;align-items:center;padding:clamp(56px,8vw,112px) clamp(20px,5vw,72px) 120px">
+  <div ref="{{ reelBox }}" onDragOver="{{ reelDragOver }}" onDrop="{{ reelDrop }}" style="position:fixed;inset:0;z-index:{{ rv.z }};overflow:hidden;background:#0b0c12">
+    <video ref="{{ reelRef }}" src="{{ reelSrc }}" poster="uploads/imagenes/work1.jpg" autoplay="" muted="" loop="" playsInline="" onPlay="{{ syncV }}" onPause="{{ syncV }}" onVolumeChange="{{ syncV }}" onTimeUpdate="{{ onTime }}" onLoadedMetadata="{{ onTime }}" style="width:100%;height:100%;object-fit:{{ rv.fit }};display:block"></video>
+    <img src="uploads/imagenes/work1.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:{{ rv.imgOp }};transition:opacity 0.5s ease;pointer-events:none">
+    <div style="position:absolute;inset:0;opacity:{{ rv.ov }};background:linear-gradient(90deg,rgba(17,19,29,0.9) 0%,rgba(17,19,29,0.55) 45%,rgba(17,19,29,0.2) 100%);pointer-events:none"></div>
+    <div style="position:absolute;inset:0;opacity:{{ rv.dim }};background:rgba(17,19,29,0.74);pointer-events:none"></div>
+    <sc-if value="{{ rv.full }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:auto 0 0 0;padding:60px clamp(16px,3vw,32px) 18px;background:linear-gradient(transparent,rgba(10,11,18,0.85));display:flex;flex-direction:column;gap:8px">
+        <input type="range" min="0" max="{{ rv.dur }}" step="0.1" value="{{ rv.cur }}" onChange="{{ seek }}" onInput="{{ seek }}" style="width:100%;margin:0;cursor:pointer;accent-color:oklch(0.76 0.14 290);height:4px">
+        <div style="display:flex;align-items:center;gap:4px">
+          <button onClick="{{ togglePlay }}" title="{{ rv.playLabel }}" style="width:44px;height:44px;border:0;cursor:pointer;border-radius:50%;display:grid;place-items:center;font-size:18px;color:#11131d;background:var(--color-neutral-100)"><i class="{{ rv.playIcon }}"></i></button>
+          <button onClick="{{ back10 }}" title="Back 10s" style="width:40px;height:40px;cursor:pointer;border-radius:50%;display:grid;place-items:center;font-size:18px;color:var(--color-text);background:transparent;border:0" style-hover="background:rgba(233,233,237,0.1)"><i class="ph ph-arrow-counter-clockwise"></i></button>
+          <button onClick="{{ fwd10 }}" title="Forward 10s" style="width:40px;height:40px;cursor:pointer;border-radius:50%;display:grid;place-items:center;font-size:18px;color:var(--color-text);background:transparent;border:0" style-hover="background:rgba(233,233,237,0.1)"><i class="ph ph-arrow-clockwise"></i></button>
+          <span style="font-size:13px;font-variant-numeric:tabular-nums;color:var(--color-neutral-200);margin-left:6px">{{ rv.time }}</span>
+          <span style="flex:1"></span>
+          <span style="font-size:12px;color:var(--color-neutral-400);margin-right:8px">Esc to exit</span>
+          <button onClick="{{ toggleMute }}" title="{{ rv.muteLabel }}" style="width:40px;height:40px;cursor:pointer;border-radius:50%;display:grid;place-items:center;font-size:18px;color:var(--color-text);background:transparent;border:0" style-hover="background:rgba(233,233,237,0.1)"><i class="{{ rv.muteIcon }}"></i></button>
+          <button onClick="{{ toggleFull }}" title="Exit fullscreen" style="width:40px;height:40px;cursor:pointer;border-radius:50%;display:grid;place-items:center;font-size:18px;color:var(--color-text);background:transparent;border:0" style-hover="background:rgba(233,233,237,0.1)"><i class="ph ph-corners-in"></i></button>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+  <div style="position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;gap:24px;max-width:620px">
+    <div style="display:inline-flex;align-self:flex-start;align-items:center;gap:8px;padding:6px 12px 6px 8px;border-radius:999px;font-size:12px;background:color-mix(in srgb,var(--color-text) 6%,transparent);border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent)">
+      <span style="width:8px;height:8px;border-radius:50%;background:oklch(0.78 0.15 155);box-shadow:0 0 10px oklch(0.78 0.15 155)"></span>Currently open to new opportunities
+    </div>
+    <h1 style="font-size:clamp(44px,5.6vw,92px);line-height:0.92;letter-spacing:-0.045em;margin:0;font-weight:600">POL<br><span style="background:linear-gradient(90deg,oklch(0.78 0.14 290),oklch(0.8 0.12 210) 55%,oklch(0.82 0.13 75));-webkit-background-clip:text;background-clip:text;color:transparent">TAUGOURDEAU</span></h1>
+    <p style="font-size:20px;line-height:1.5;color:var(--color-neutral-300);max-width:460px;margin:0;text-wrap:pretty">3D Generalist specialized in video games, film and advertising.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a href="#portfolio" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;font-weight:500;color:#11131d;background:var(--color-neutral-100)">View Portfolio <i class="ph ph-arrow-right"></i></a>
+      <button onClick="{{ toggleFull }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;font:inherit;font-weight:500;cursor:pointer;color:var(--color-text);background:rgba(10,11,18,0.45);backdrop-filter:blur(8px);border:1px solid color-mix(in srgb,var(--color-text) 22%,transparent)" style-hover="background:rgba(10,11,18,0.7)"><i class="ph ph-play-circle" style="font-size:18px"></i> Watch Demo Reel</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+      <sc-for list="{{ socials }}" as="s" hint-placeholder-count="4">
+        <a href="{{ s.href }}" target="_blank" title="{{ s.label }}" style="width:40px;height:40px;display:grid;place-items:center;border-radius:10px;font-size:19px;color:var(--color-neutral-300);background:color-mix(in srgb,var(--color-text) 5%,transparent);border:1px solid color-mix(in srgb,var(--color-text) 9%,transparent)" style-hover="color:var(--color-text);background:color-mix(in srgb,var(--color-text) 10%,transparent)"><i class="{{ s.icon }}"></i></a>
+      </sc-for>
+      <label title="Upload demo reel" style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 14px;border-radius:10px;font-size:13px;cursor:pointer;color:var(--color-neutral-300);background:color-mix(in srgb,var(--color-text) 5%,transparent);border:1px solid color-mix(in srgb,var(--color-text) 9%,transparent)" style-hover="color:var(--color-text);background:color-mix(in srgb,var(--color-text) 10%,transparent)"><i class="ph ph-upload-simple" style="font-size:17px"></i>Upload reel<input type="file" accept="video/*" onChange="{{ reelPick }}" style="display:none"></label>
+    </div>
+  </div>
+</header>
+
+<section id="services" data-screen-label="Skills" style="position:relative;z-index:1;padding:0 clamp(20px,5vw,72px) 120px">
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:44px;max-width:640px">
+    <span style="font-size:13px;font-weight:500;color:oklch(0.78 0.14 290)">01 — What I Do</span>
+    <h2 style="font-size:clamp(38px,5vw,64px);letter-spacing:-0.04em;margin:0;font-weight:600">Skills</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:16px">
+    <sc-for list="{{ services }}" as="s" hint-placeholder-count="6">
+      <div style="position:relative;display:flex;flex-direction:column;gap:14px;padding:26px;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,{{ s.tint }},color-mix(in srgb,var(--color-surface) 60%,transparent) 55%);border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)" style-hover="border-color:color-mix(in srgb,var(--color-text) 20%,transparent);transform:translateY(-3px)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <span style="width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:24px;color:{{ s.c }};background:{{ s.tint }};border:1px solid {{ s.line }}"><i class="{{ s.icon }}"></i></span>
+          <span style="font-family:ui-monospace,monospace;font-size:12px;color:var(--color-neutral-600)">{{ s.n }}</span>
+        </div>
+        <h3 style="font-size:21px;margin:0;font-weight:600;letter-spacing:-0.02em">{{ s.title }}</h3>
+        <p style="font-size:14px;line-height:1.6;color:var(--color-neutral-400);margin:0;flex:1;text-wrap:pretty">{{ s.body }}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;padding-top:14px;border-top:1px solid color-mix(in srgb,var(--color-text) 7%,transparent)">
+          <sc-for list="{{ s.tags }}" as="t"><span style="font-size:12px;padding:4px 10px;border-radius:999px;color:{{ s.c }};background:{{ s.tint }}">{{ t }}</span></sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="portfolio" data-screen-label="Portfolio" style="position:relative;z-index:{{ pz }};padding:0 clamp(20px,5vw,72px) 120px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:36px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span style="font-size:13px;font-weight:500;color:oklch(0.8 0.11 210)">02 — Portfolio</span>
+      <h2 style="font-size:clamp(38px,5vw,64px);letter-spacing:-0.04em;margin:0;font-weight:600">3D Artworks</h2>
+    </div>
+      </div>
+  <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:clamp(96px,10.5vw,150px);grid-auto-flow:dense;gap:14px">
+    <div style="position:relative;grid-column:span 7;grid-row:span 4;border-radius:26px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,0.45),0 0 100px color-mix(in oklch,oklch(0.82 0.13 75) 12%,transparent)">
+      
+        <a href="https://www.artstation.com/artwork/AZZgdo" target="_blank" style="position:absolute;inset:0;display:block;color:var(--color-text)">
+          <img src="uploads/imagenes/work1.jpg" alt="F1 Racing Car" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+          <div style="position:absolute;inset:auto 0 0 0;padding:80px 24px 22px;background:linear-gradient(transparent,rgba(10,11,18,0.9) 55%);display:flex;flex-direction:column;gap:6px;pointer-events:none">
+            <span style="font-size:clamp(26px,3.2vw,40px);font-weight:600;letter-spacing:-0.03em">F1 Racing Car</span>
+            <span style="font-size:14px;line-height:1.5;color:var(--color-neutral-300);max-width:520px;text-wrap:pretty">Full F1 car model — hard surface, high detail, PBR materials and studio render.</span>
+          </div>
+        </a>
+      
+      <div style="position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;pointer-events:none">
+        <span style="font-size:11px;font-weight:500;padding:4px 10px;border-radius:999px;color:#11131d;background:oklch(0.82 0.13 75)">★ Featured · Vehicle</span>
+        
+      </div>
+    </div>
+    <sc-for list="{{ worksA }}" as="w" hint-placeholder-count="2">
+      <a href="{{ w.href }}" target="_blank" style="position:relative;grid-column:{{ w.gc }};grid-row:{{ w.gr }};display:block;color:var(--color-text);transition:transform .35s ease" style-hover="transform:translateY(-4px)">
+        <div style="position:absolute;inset:0;border-radius:24px;overflow:hidden;-webkit-mask-image:radial-gradient(130% 110% at 50% 30%,#000 55%,transparent 100%);mask-image:radial-gradient(130% 110% at 50% 30%,#000 55%,transparent 100%)">
+          <img src="{{ w.img }}" alt="{{ w.title }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+        </div>
+        <div style="position:absolute;inset:0;border-radius:24px;background:radial-gradient(80% 60% at 0% 100%,color-mix(in oklch,{{ w.c }} 22%,transparent),transparent 70%);mix-blend-mode:screen;pointer-events:none"></div>
+        <div style="position:absolute;inset:auto 0 0 0;padding:60px 20px 16px;background:linear-gradient(transparent,rgba(17,19,29,0.75) 65%);display:flex;flex-direction:column;gap:6px;pointer-events:none">
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:{{ w.c }}"><span style="width:18px;height:2px;border-radius:2px;background:{{ w.c }};box-shadow:0 0 8px {{ w.c }}"></span>{{ w.label }}</span>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px">
+            <span style="font-size:{{ w.ts }};font-weight:600;letter-spacing:-0.02em">{{ w.title }}</span>
+            <span style="flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:15px;color:#11131d;background:{{ w.c }}"><i class="ph ph-arrow-up-right"></i></span>
+          </div>
+          <span style="font-size:13px;line-height:1.5;color:var(--color-neutral-300);max-width:520px;text-wrap:pretty">{{ w.body }}</span>
+        </div>
+      </a>
+    </sc-for>
+    <div ref="{{ viewerBox }}" style="position:{{ vw.pos }};inset:0;z-index:{{ vw.z }};grid-column:span 12;grid-row:span 4;border-radius:{{ vw.rad }};overflow:hidden;background:#11131d;box-shadow:0 0 0 1px color-mix(in srgb,var(--color-text) 6%,transparent),0 40px 100px rgba(0,0,0,0.5),0 0 120px color-mix(in oklch,oklch(0.62 0.16 290) 18%,transparent)">
+      <sc-if value="{{ viewerOff }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ startViewer }}" style="position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;background:#11131d;color:var(--color-text);font:inherit" style-hover="filter:brightness(1.08)">
+          <img src="{{ posterSrc }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:{{ posterOp }}">
+          <div style="position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 50%,transparent,rgba(17,19,29,0.85))"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+            <span style="width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-size:32px;color:#11131d;background:var(--color-neutral-100);box-shadow:0 0 0 12px color-mix(in srgb,var(--color-neutral-100) 14%,transparent),0 0 60px color-mix(in oklch,oklch(0.76 0.14 290) 45%,transparent)"><i class="ph ph-cube"></i></span>
+            <span style="font-size:clamp(20px,2.4vw,28px);font-weight:600;letter-spacing:-0.02em">Click to explore in 3D</span>
+            <span style="font-size:13px;color:var(--color-neutral-300)">{{ viewerHint }}</span>
+          </div>
+        </button>
+      </sc-if>
+      <sc-if value="{{ viewerMounted }}" hint-placeholder-val="{{ false }}">
+  <iframe ref="{{ viewerRef }}" src="car-viewer.html?full=1" allow="fullscreen" allowFullScreen="" title="F1 Racing Car — interactive 3D" style="position:absolute;inset:0;width:100%;height:100%;border:0;display:{{ viewerDisp }}"></iframe>
+      </sc-if>
+      <sc-if value="{{ viewerOff }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;top:16px;left:16px;display:flex;align-items:center;gap:10px;pointer-events:none">
+        <span style="width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;color:oklch(0.75 0.14 340);background:rgba(10,11,18,0.7);border:1px solid color-mix(in oklch,oklch(0.75 0.14 340) 35%,transparent)"><i class="ph ph-cube"></i></span>
+        <div style="display:flex;flex-direction:column;line-height:1.2;padding:4px 10px;border-radius:10px;background:rgba(10,11,18,0.6);backdrop-filter:blur(8px)"><span style="font-size:14px;font-weight:600">F1 Racing Car · 3D Interactive</span><span style="font-size:11px;color:var(--color-neutral-400)">Real-time viewer</span></div>
+      </div>
+      </sc-if>
+    </div>
+    <sc-for list="{{ worksB }}" as="w" hint-placeholder-count="5">
+      <a href="{{ w.href }}" target="_blank" style="position:relative;grid-column:{{ w.gc }};grid-row:{{ w.gr }};display:block;color:var(--color-text);transition:transform .35s ease" style-hover="transform:translateY(-4px)">
+        <div style="position:absolute;inset:0;border-radius:24px;overflow:hidden;-webkit-mask-image:radial-gradient(130% 110% at 50% 30%,#000 55%,transparent 100%);mask-image:radial-gradient(130% 110% at 50% 30%,#000 55%,transparent 100%)">
+          <img src="{{ w.img }}" alt="{{ w.title }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+        </div>
+        <div style="position:absolute;inset:0;border-radius:24px;background:radial-gradient(80% 60% at 0% 100%,color-mix(in oklch,{{ w.c }} 22%,transparent),transparent 70%);mix-blend-mode:screen;pointer-events:none"></div>
+        <div style="position:absolute;inset:auto 0 0 0;padding:60px 20px 16px;background:linear-gradient(transparent,rgba(17,19,29,0.75) 65%);display:flex;flex-direction:column;gap:6px;pointer-events:none">
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:{{ w.c }}"><span style="width:18px;height:2px;border-radius:2px;background:{{ w.c }};box-shadow:0 0 8px {{ w.c }}"></span>{{ w.label }}</span>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px">
+            <span style="font-size:{{ w.ts }};font-weight:600;letter-spacing:-0.02em">{{ w.title }}</span>
+            <span style="flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:15px;color:#11131d;background:{{ w.c }}"><i class="ph ph-arrow-up-right"></i></span>
+          </div>
+          <span style="font-size:13px;line-height:1.5;color:var(--color-neutral-300);max-width:520px;text-wrap:pretty">{{ w.body }}</span>
+        </div>
+      </a>
+    </sc-for>
+  </div>
+
+  <div style="margin-top:96px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span style="font-size:13px;font-weight:500;color:oklch(0.72 0.15 25)">Sub-section · Portfolio</span>
+      <h3 style="font-size:clamp(28px,3.5vw,44px);letter-spacing:-0.03em;margin:0;font-weight:600">Game Projects</h3>
+    </div>
+    <a href="https://pol-taug.itch.io/" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:10px;font-size:14px;color:var(--color-text);border:1px solid color-mix(in srgb,var(--color-text) 18%,transparent)"><i class="ph ph-game-controller"></i> View itch.io</a>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <sc-for list="{{ games }}" as="g" hint-placeholder-count="3">
+      <a href="{{ g.href }}" target="_blank" style="position:relative;display:flex;align-items:stretch;min-height:150px;border-radius:18px;overflow:hidden;color:var(--color-text);background:linear-gradient(90deg,{{ g.tint }},rgba(17,19,29,0.45) 55%);backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--color-text) 7%,transparent)" style-hover="border-color:{{ g.c }};box-shadow:0 0 0 1px {{ g.c }},0 16px 40px rgba(0,0,0,0.4),0 0 50px {{ g.tint }}">
+        <div style="position:relative;flex:0 0 clamp(150px,32%,360px);min-height:150px"><img src="{{ g.img }}" alt="{{ g.title }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+          <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 60%,rgba(17,19,29,0.55));pointer-events:none"></div>
+        </div>
+        <div style="flex:1;min-width:0;display:flex;align-items:center;gap:20px;padding:20px clamp(18px,3vw,32px)">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+              <span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:999px;color:#11131d;background:{{ g.c }}">{{ g.cat }}</span>
+              <sc-if value="{{ g.main }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;padding:3px 10px;border-radius:999px;color:var(--color-neutral-300);background:color-mix(in srgb,var(--color-text) 8%,transparent)">Main project</span></sc-if>
+            </div>
+            <span style="font-size:clamp(20px,2.2vw,26px);font-weight:600;letter-spacing:-0.025em;line-height:1.1">{{ g.title }}</span>
+            <span style="font-size:14px;line-height:1.55;color:var(--color-neutral-400);max-width:560px;text-wrap:pretty">{{ g.body }}</span>
+          </div>
+          <span title="View on itch.io" style="flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:19px;color:#11131d;background:{{ g.c }}"><i class="ph ph-arrow-up-right"></i></span>
+        </div>
+      </a>
+    </sc-for>
+    <div ref="{{ playBox }}" style="position:relative;margin-top:6px;aspect-ratio:16/9;max-height:80vh;width:100%;border-radius:20px;overflow:hidden;background:#0b0c12;box-shadow:0 0 0 1px color-mix(in srgb,var(--color-text) 8%,transparent),0 30px 80px rgba(0,0,0,0.45),0 0 90px color-mix(in oklch,oklch(0.82 0.13 75) 14%,transparent)">
+      <sc-if value="{{ playOff }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ startPlay }}" style="position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;background:#0b0c12;color:var(--color-text);font:inherit" style-hover="filter:brightness(1.08)">
+          <img src="uploads/imagenes/GameJam2.png" alt="Turbo Rush" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5">
+          <div style="position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 50%,transparent,rgba(11,12,18,0.9))"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center">
+            <span style="font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.82 0.13 75)">Turbo Rush · Play in your browser</span>
+            <span style="width:84px;height:84px;border-radius:50%;display:grid;place-items:center;font-size:34px;color:#11131d;background:oklch(0.82 0.13 75);box-shadow:0 0 0 12px color-mix(in oklch,oklch(0.82 0.13 75) 18%,transparent),0 0 60px color-mix(in oklch,oklch(0.82 0.13 75) 45%,transparent)"><i class="ph ph-play"></i></span>
+            <span style="font-size:clamp(24px,3vw,36px);font-weight:600;letter-spacing:-0.03em">Play</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--color-neutral-400)">Opens on itch.io <i class="ph ph-arrow-up-right"></i></span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:12px;color:var(--color-neutral-300)">
+              <span style="padding:5px 10px;border-radius:8px;background:rgba(233,233,237,0.08)">↑ Accelerate</span>
+              <span style="padding:5px 10px;border-radius:8px;background:rgba(233,233,237,0.08)">↓ Brake</span>
+              <span style="padding:5px 10px;border-radius:8px;background:rgba(233,233,237,0.08)">Space · Turbo</span>
+            </div>
+          </div>
+        </button>
+      </sc-if>
+      <sc-if value="{{ playOn }}" hint-placeholder-val="{{ false }}">
+        <iframe src="{{ playSrc }}" title="Turbo Rush" allow="autoplay; fullscreen; gamepad" allowFullScreen="" style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000"></iframe>
+        <div style="position:absolute;top:12px;right:12px;display:flex;gap:6px">
+          <button onClick="{{ playFull }}" title="Fullscreen" style="width:40px;height:40px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:17px;color:var(--color-text);background:rgba(10,11,18,0.7);border:1px solid color-mix(in srgb,var(--color-text) 16%,transparent)"><i class="ph ph-corners-out"></i></button>
+          <button onClick="{{ stopPlay }}" title="Close game" style="width:40px;height:40px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:17px;color:var(--color-text);background:rgba(10,11,18,0.7);border:1px solid color-mix(in srgb,var(--color-text) 16%,transparent)"><i class="ph ph-x"></i></button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</section>
+
+<section id="experience" data-screen-label="Experience" style="position:relative;z-index:1;padding:100px clamp(20px,5vw,72px) 120px;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--color-surface) 70%,transparent) 20%,color-mix(in srgb,var(--color-surface) 70%,transparent) 80%,transparent)">
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:56px">
+    <span style="font-size:13px;font-weight:500;color:oklch(0.82 0.13 75)">03 — Professional Experience</span>
+    <h2 style="font-size:clamp(38px,5vw,64px);letter-spacing:-0.04em;margin:0;font-weight:600">Companies I've Worked With</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:72px">
+    <sc-for list="{{ companies }}" as="c" hint-placeholder-count="2">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:44px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:16px;max-width:460px">
+          <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;color:{{ c.c }};background:{{ c.tint }}"><i class="{{ c.icon }}"></i>{{ c.kicker }}</span>
+          <h3 style="font-size:clamp(26px,3vw,38px);letter-spacing:-0.03em;margin:0;font-weight:600">{{ c.name }}</h3>
+          <p style="font-size:15px;line-height:1.65;color:var(--color-neutral-300);margin:0;text-wrap:pretty">{{ c.pre }}<strong style="color:{{ c.c }};font-weight:600">{{ c.bold }}</strong>{{ c.post }}</p>
+          <a href="{{ c.href }}" target="_blank" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:500;color:#11131d;background:{{ c.c }}">{{ c.cta }} <i class="ph ph-arrow-up-right"></i></a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:var(--color-surface);box-shadow:0 24px 60px rgba(0,0,0,0.45),0 0 0 1px color-mix(in srgb,var(--color-text) 10%,transparent)">
+            <button onClick="{{ c.open }}" title="View fullscreen" style="position:relative;display:block;width:100%;height:100%;padding:0;border:0;cursor:zoom-in;background:transparent">
+              <img src="{{ c.main }}" alt="{{ c.name }}" style="width:100%;height:100%;object-fit:cover;display:block">
+              <span style="position:absolute;right:12px;bottom:12px;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:18px;color:var(--color-text);background:rgba(10,11,18,0.65);backdrop-filter:blur(8px)"><i class="ph ph-arrows-out"></i></span>
+            </button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+            <sc-for list="{{ c.thumbs }}" as="t">
+              <button onClick="{{ t.pick }}" style="padding:0;border:0;cursor:pointer;aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:var(--color-surface);box-shadow:{{ t.ring }};opacity:{{ t.op }}" style-hover="opacity:1">
+                <img src="{{ t.src }}" alt="" style="width:100%;height:100%;object-fit:cover">
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="about" data-screen-label="About" style="position:relative;z-index:1;padding:0 clamp(20px,5vw,72px) 120px">
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:44px">
+    <span style="font-size:13px;font-weight:500;color:oklch(0.78 0.15 155)">04 — About Me</span>
+    <h2 style="font-size:clamp(38px,5vw,64px);letter-spacing:-0.04em;margin:0;font-weight:600">About Me</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch">
+      <div style="flex:1.4 1 420px;display:flex;flex-direction:column;justify-content:space-between;gap:28px;padding:clamp(24px,3.5vw,40px);border-radius:20px;background:rgba(17,19,29,0.45);backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <p style="font-size:clamp(22px,2.4vw,30px);line-height:1.38;letter-spacing:-0.02em;margin:0;text-wrap:pretty">I'm Pol Taugourdeau, a 3D generalist artist with a passion for creating worlds, characters and assets that come to life in video games, film and advertising.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px 28px">
+            <p style="font-size:15px;line-height:1.65;color:var(--color-neutral-400);margin:0;text-wrap:pretty">From hard surface modeling to level design, I combine technical precision with artistic vision. I've worked on personal projects, indie studios and professional collaborations that have given me a complete view of the production pipeline.</p>
+            <p style="font-size:15px;line-height:1.65;color:var(--color-neutral-400);margin:0;text-wrap:pretty">Currently open to new opportunities. I share my work on ArtStation and Instagram and keep publishing projects on itch.io.</p>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:20px;border-top:1px solid color-mix(in srgb,var(--color-text) 7%,transparent)">
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--color-text) 6%,transparent)"><i class="ph ph-map-pin" style="color:oklch(0.74 0.15 25)"></i>Barcelona, Spain</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--color-text) 6%,transparent)"><span style="width:8px;height:8px;border-radius:50%;background:oklch(0.78 0.15 155);box-shadow:0 0 8px oklch(0.78 0.15 155)"></span>Open to new opportunities</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--color-text) 6%,transparent)"><i class="ph ph-cube" style="color:oklch(0.76 0.14 290)"></i>3D Generalist</span>
+        </div>
+      </div>
+      <div style="flex:1 1 340px;display:flex;flex-direction:column;gap:18px;padding:clamp(24px,3vw,32px);border-radius:20px;background:rgba(17,19,29,0.45);backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:15px;font-weight:600">Skills</span><i class="ph ph-chart-bar" style="font-size:18px;color:var(--color-neutral-500)"></i></div>
+        <div style="display:flex;flex-direction:column;justify-content:space-between;gap:16px;flex:1">
+          <sc-for list="{{ bars }}" as="b" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:13px;color:var(--color-neutral-200)">{{ b.label }}</span><span style="font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:{{ b.c }}">{{ b.w }}</span></div>
+              <div style="height:6px;border-radius:999px;background:color-mix(in srgb,var(--color-text) 8%,transparent);overflow:hidden"><div style="height:100%;width:{{ b.w }};border-radius:999px;background:{{ b.c }};box-shadow:0 0 12px {{ b.c }}"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;padding:clamp(20px,3vw,28px);border-radius:20px;background:rgba(17,19,29,0.45);backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:15px;font-weight:600">Software &amp; Tools</span><i class="ph ph-wrench" style="font-size:18px;color:var(--color-neutral-500)"></i></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px">
+        <sc-for list="{{ tools }}" as="t" hint-placeholder-count="11">
+          <a href="{{ t.href }}" target="_blank" title="{{ t.name }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px 12px;border-radius:12px;font-size:12px;color:var(--color-neutral-300);background:color-mix(in srgb,var(--color-text) 4%,transparent);border:1px solid color-mix(in srgb,var(--color-text) 6%,transparent)" style-hover="border-color:color-mix(in srgb,var(--color-text) 22%,transparent);color:var(--color-text);transform:translateY(-2px)">
+            <img src="{{ t.icon }}" alt="" style="width:34px;height:34px;object-fit:contain">{{ t.name }}
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" data-screen-label="Contact" style="position:relative;z-index:1;padding:0 clamp(20px,5vw,72px) 40px">
+  <div style="position:relative;overflow:hidden;border-radius:24px;padding:clamp(32px,5vw,64px);background:linear-gradient(135deg,oklch(0.3 0.09 290),oklch(0.26 0.06 230) 60%,oklch(0.24 0.04 210));border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent)">
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:36px">
+      <span style="font-size:13px;font-weight:500;color:oklch(0.85 0.1 290)">05 — Available for opportunities.</span>
+      <h2 style="font-size:clamp(44px,7vw,96px);letter-spacing:-0.045em;line-height:0.95;margin:0;font-weight:600">Get in Touch</h2>
+      <a href="mailto:poltaugourdeau11@gmail.com" style="align-self:flex-start;display:inline-flex;align-items:center;gap:10px;margin-top:12px;padding:14px 22px;border-radius:12px;font-size:clamp(15px,1.8vw,19px);font-weight:500;color:#11131d;background:var(--color-neutral-100)"><i class="ph ph-envelope-simple"></i>poltaugourdeau11@gmail.com</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px">
+      <sc-for list="{{ contacts }}" as="k" hint-placeholder-count="5">
+        <a href="{{ k.href }}" target="_blank" style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;color:var(--color-text);background:rgba(10,11,18,0.35);border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent)" style-hover="background:rgba(10,11,18,0.55)">
+          <span style="width:40px;height:40px;flex:none;border-radius:10px;display:grid;place-items:center;font-size:20px;color:{{ k.c }};background:{{ k.tint }}"><i class="{{ k.icon }}"></i></span>
+          <span style="display:flex;flex-direction:column;min-width:0"><span style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis">{{ k.value }}</span><span style="font-size:12px;color:var(--color-neutral-400)">{{ k.note }}</span></span>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+  <footer style="margin-top:40px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--color-neutral-500)">
+    <span>© 2025 Pol Taugourdeau. All rights reserved.</span>
+    <span style="display:flex;gap:16px">Barcelona, Spain <a href="#hero">⇧ Back to top</a></span>
+  </footer>
+</section>
+
+<sc-if value="{{ lb.on }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ lb.close }}" style="position:fixed;inset:0;z-index:5000;display:flex;flex-direction:column;background:rgba(8,9,14,0.94);backdrop-filter:blur(10px)">
+    <div style="display:flex;align-items:center;gap:12px;padding:16px clamp(16px,3vw,32px)">
+      <span style="font-size:15px;font-weight:600">{{ lb.title }}</span>
+      <span style="font-size:13px;color:var(--color-neutral-400);font-variant-numeric:tabular-nums">{{ lb.count }}</span>
+      <span style="flex:1"></span>
+      <span style="font-size:12px;color:var(--color-neutral-500)">← → to navigate · Esc to close</span>
+      <button onClick="{{ lb.close }}" title="Close" style="width:40px;height:40px;border-radius:50%;border:1px solid color-mix(in srgb,var(--color-text) 16%,transparent);cursor:pointer;display:grid;place-items:center;font-size:18px;color:var(--color-text);background:transparent" style-hover="background:rgba(233,233,237,0.1)"><i class="ph ph-x"></i></button>
+    </div>
+    <div style="position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 clamp(60px,8vw,110px)">
+      <img onClick="{{ lb.stop }}" src="{{ lb.src }}" alt="{{ lb.title }}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,0.6)">
+      <button onClick="{{ lb.prev }}" title="Previous" style="position:absolute;left:clamp(12px,2vw,28px);top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;border:1px solid color-mix(in srgb,var(--color-text) 16%,transparent);cursor:pointer;display:grid;place-items:center;font-size:22px;color:var(--color-text);background:rgba(10,11,18,0.6)" style-hover="background:rgba(233,233,237,0.12)"><i class="ph ph-caret-left"></i></button>
+      <button onClick="{{ lb.next }}" title="Next" style="position:absolute;right:clamp(12px,2vw,28px);top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;border:1px solid color-mix(in srgb,var(--color-text) 16%,transparent);cursor:pointer;display:grid;place-items:center;font-size:22px;color:var(--color-text);background:rgba(10,11,18,0.6)" style-hover="background:rgba(233,233,237,0.12)"><i class="ph ph-caret-right"></i></button>
+    </div>
+    <div onClick="{{ lb.stop }}" style="display:flex;justify-content:center;gap:8px;padding:16px">
+      <sc-for list="{{ lb.thumbs }}" as="t">
+        <button onClick="{{ t.pick }}" style="width:72px;height:46px;padding:0;border:0;cursor:pointer;border-radius:6px;overflow:hidden;opacity:{{ t.op }};box-shadow:{{ t.ring }}" style-hover="opacity:1"><img src="{{ t.src }}" alt="" style="width:100%;height:100%;object-fit:cover"></button>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;columns&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:3,&quot;options&quot;:[2,3,4],&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Portfolio&quot;},&quot;turboRushEmbed&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Games&quot;}}">
+class Component extends DCLogic {
+  state = { f1Mode: 'render', filter: 'All', active: { keru: 0, livitum: 0 } };
+  reelRef = React.createRef();
+  setReel = f => { if (!f || !/^video\//.test(f.type)) return; if (this._reelUrl) URL.revokeObjectURL(this._reelUrl); this._reelUrl = URL.createObjectURL(f); this.setState({ reelSrc: this._reelUrl }); };
+  reelBox = React.createRef();
+  syncV = () => { const v = this.reelRef.current; if (v && !(this.state.theater || this.state.fs) && !v.muted) v.muted = true; this.forceUpdate(); };
+  onTime = () => { if (this.state.theater || this.state.fs) this.forceUpdate(); };
+  seek = e => { const v = this.reelRef.current; if (v) { v.currentTime = +e.target.value; this.forceUpdate(); } };
+  skip = d => { const v = this.reelRef.current; if (v) v.currentTime = Math.max(0, Math.min((v.duration || 0), v.currentTime + d)); };
+  viewerRef = React.createRef();
+  viewerBox = React.createRef();
+  playBox = React.createRef();
+  startPlay = () => window.open(this.props.turboRushEmbed || 'https://the-als12.itch.io/turbo-rush', '_blank', 'noopener');
+  stopPlay = () => this.setState({ playing: false });
+  playFull = () => { const b = this.playBox.current; const req = b && (b.requestFullscreen || b.webkitRequestFullscreen); if (req) { try { const r = req.call(b); r && r.catch && r.catch(() => {}); } catch (e) {} } };
+  openViewer = () => {
+    this.setState({ viewerOn: true, viewerMounted: true }, () => { const f = this.viewerRef.current; try { f && f.contentWindow && f.contentWindow.postMessage({ type: 'viewer-open' }, '*'); } catch (e) {} });
+    const box = this.viewerBox.current, req = box && (box.requestFullscreen || box.webkitRequestFullscreen);
+    if (req) { try { const r = req.call(box); if (r && r.catch) r.catch(() => {}); } catch (e) {} }
+  };
+  closeViewer = () => {
+    if (document.fullscreenElement && document.fullscreenElement === this.viewerBox.current) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    this._viewerWasFs = false; this.setState({ viewerOn: false });
+  };
+  onMsg = e => { if (e.data && e.data.type === 'viewer-poster' && e.data.src) this.setState({ poster: e.data.src }); if (e.data && e.data.type === 'viewer-fullscreen' && !e.data.on) this.closeViewer(); };
+  onScroll = () => { const sy = window.scrollY; if (Math.abs(sy - (this.state.sy || 0)) > 8) this.setState({ sy }); };
+  togglePlay = () => { const v = this.reelRef.current; if (!v) return; v.paused ? v.play().catch(() => {}) : v.pause(); };
+  toggleMute = () => { const v = this.reelRef.current; if (v) v.muted = !v.muted; };
+  enterFull = () => {
+    const v = this.reelRef.current, box = this.reelBox.current; if (!v || !box) return;
+    v.loop = true; v.currentTime = 0; v.muted = false; v.play().catch(() => {});
+    const req = box.requestFullscreen || box.webkitRequestFullscreen;
+    const fallback = () => this.setState({ theater: true });
+    try { const r = req && req.call(box); if (r && r.catch) r.catch(fallback); else if (!req) fallback(); } catch (e) { fallback(); }
+  };
+  exitFull = () => {
+    const v = this.reelRef.current; if (v) v.muted = true;
+    if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    this.setState({ theater: false });
+  };
+  toggleFull = () => (this.state.theater || this.state.fs) ? this.exitFull() : this.enterFull();
+  onFsChange = () => { const fe = document.fullscreenElement || document.webkitFullscreenElement;
+    if (this.state.viewerOn && fe && fe === this.viewerBox.current) { this._viewerWasFs = true; return; }
+    if (this.state.viewerOn && this._viewerWasFs && !fe) { this._viewerWasFs = false; this.setState({ viewerOn: false }); return; }
+    const fs = !!fe; if (!fs && this.reelRef.current) this.reelRef.current.muted = true; this.setState({ fs }); };
+  lbGo = d => this.setState(s => { if (!s.lb) return null; const n = this._imgs[s.lb.key].length; const i = (s.lb.i + d + n) % n; return { lb: { ...s.lb, i }, active: { ...s.active, [s.lb.key]: i } }; });
+  onKey = e => { if (this.state.lb) { if (e.key === 'ArrowRight') { e.preventDefault(); this.lbGo(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); this.lbGo(-1); } else if (e.key === 'Escape') this.setState({ lb: null }); return; } if (e.key === 'Escape' && this.state.theater) this.exitFull(); if (e.key === 'Escape' && this.state.viewerOn) this.closeViewer(); };
+  forceMute() { const v = this.reelRef.current; if (v && !(this.state.theater || this.state.fs)) { v.muted = true; v.defaultMuted = true; v.loop = true; } }
+  componentDidUpdate(pp, ps) { if (ps.reelSrc !== this.state.reelSrc) { this.forceMute(); const v = this.reelRef.current; if (v) v.play().catch(() => {}); this.forceUpdate(); } }
+  componentDidMount() { this.forceMute(); const v0 = this.reelRef.current; if (v0) v0.play().catch(() => {}); this.forceUpdate(); document.addEventListener('fullscreenchange', this.onFsChange); document.addEventListener('webkitfullscreenchange', this.onFsChange); document.addEventListener('keydown', this.onKey); window.addEventListener('scroll', this.onScroll, { passive: true }); window.addEventListener('message', this.onMsg); try { const ps = localStorage.getItem('pt-viewer-poster'); if (ps) this.setState({ poster: ps }); } catch (e) {} }
+  componentWillUnmount() { document.removeEventListener('fullscreenchange', this.onFsChange); document.removeEventListener('webkitfullscreenchange', this.onFsChange); document.removeEventListener('keydown', this.onKey); window.removeEventListener('scroll', this.onScroll); window.removeEventListener('message', this.onMsg); }
+  renderVals() {
+    const P = this.props;
+    const cols = P.columns ?? 3;
+    const C = {
+      violet: 'oklch(0.76 0.14 290)', cyan: 'oklch(0.8 0.11 210)', amber: 'oklch(0.82 0.13 75)',
+      coral: 'oklch(0.74 0.15 25)', green: 'oklch(0.78 0.14 155)', pink: 'oklch(0.75 0.14 340)',
+    };
+    const col = k => ({ c: C[k], tint: `color-mix(in oklch, ${C[k]} 14%, transparent)`, line: `color-mix(in oklch, ${C[k]} 30%, transparent)` });
+    const base = 'uploads/imagenes/';
+    const services = [
+      { n: '01', icon: 'ph ph-cube', k: 'violet', title: '3D Modeling', body: 'High-quality hard surface and organic modeling. Characters, props, environments and assets optimized for game engines or rendering.', tags: ['Game-ready', 'High-Poly', 'Low Poly', 'Retopology', 'Rendering'] },
+      { n: '02', icon: 'ph ph-paint-brush', k: 'pink', title: 'Texturing & Shading', body: 'PBR workflows with Substance Painter. Realistic materials and procedural shading for any rendering pipeline.', tags: ['PBR', 'Substance', 'Procedural'] },
+      { n: '03', icon: 'ph ph-aperture', k: 'amber', title: 'Visualization & Rendering', body: 'Photorealistic renders for advertising and portfolio. Studio lighting, HDRI environments and post-processing.', tags: ['Blender', 'Cycles', 'Unreal Render', 'Marmoset', 'Arnold Render'] },
+      { n: '04', icon: 'ph ph-game-controller', k: 'cyan', title: 'Game Assets', body: 'Full asset production for game engines. LODs, collision meshes, UV maps and exports ready for Unity and Unreal Engine.', tags: ['Unreal', 'Unity', 'FBX / GLTF'] },
+      { n: '05', icon: 'ph ph-film-strip', k: 'coral', title: 'Animation', body: 'Object, environment and cinematic animations. Keyframe and procedural motion for demos and cutscenes.', tags: ['Cinematic', 'Rigging', 'Motion'] },
+      { n: '06', icon: 'ph ph-code', k: 'green', title: 'Programming', body: 'Programming knowledge applied to game development. Scripting, mechanics logic and asset integration in game engines.', tags: ['C', 'C#', 'C++ Basic', 'Unity', 'Unreal Engine'] },
+    ].map(s => ({ ...s, ...col(s.k) }));
+    const catColor = { Vehicle: 'cyan', Character: 'coral', Product: 'amber', Stylized: 'green' };
+    const allWorks = [
+      { id: 'w-f1', file: 'work1.jpg', title: 'F1 Racing Car', cat: 'Vehicle', body: 'Full F1 car model — hard surface, high detail, PBR materials and studio render.', href: 'https://www.artstation.com/artwork/AZZgdo' },
+      { id: 'w-mustang', file: 'Ford1.jpg', title: 'Ford Mustang', cat: 'Vehicle', body: 'Detailed Ford Mustang model with full PBR texturing and cinematic render.', href: 'https://www.artstation.com/artwork/8bYZzq' },
+      { id: 'w-hover', file: 'HoverBike.jpg', title: 'Hoverbike', cat: 'Vehicle', body: 'Sci-fi hoverbike modeled and textured with a futuristic hard surface design.', href: 'https://www.artstation.com/artwork/qe2Y0n' },
+      { id: 'w-cyborg', file: 'cyborg.jpg', title: 'Cyborg', cat: 'Character', body: 'Character model combining organic and hard surface elements with detailed texturing.', href: 'https://www.artstation.com/artwork/w0VgY6' },
+      { id: 'w-phones', file: 'Headphones.jpg', title: 'Headphones', cat: 'Product', body: 'Product visualization — headphones model with studio lighting and PBR materials.', href: 'https://www.artstation.com/artwork/VJQLN5' },
+      { id: 'w-tiki', file: 'tiki.jpg', title: 'Tiki', cat: 'Stylized', body: 'Stylized Tiki model with hand-crafted texturing and unique artistic direction.', href: 'https://www.artstation.com/artwork/qedKve' },
+      { id: 'w-sub', file: 'submarino.jpg', title: 'Submarine', cat: 'Vehicle', body: 'Submarine model with detailed hard surface and underwater atmosphere render.', href: 'https://www.artstation.com/artwork/yDzRAQ' },
+      { id: 'w-porsche', file: 'porche.jpg', title: 'Porsche', cat: 'Vehicle', body: 'Porsche model with high-fidelity hard surface detail, full PBR textures and studio render.', href: 'https://www.artstation.com/artwork/Jv8DdD' },
+    ];
+    const f = this.state.filter;
+    const layout = [['span 5','span 2'],['span 5','span 2'],['span 4','span 4'],['span 4','span 2'],['span 4','span 2'],['span 8','span 2'],['span 12','span 3']];
+    const works = allWorks.slice(1).map((w, i) => ({ ...w, img: base + w.file, ph: w.title + ' render', c: C[catColor[w.cat]],
+      label: w.cat, num: String(i + 2).padStart(2, '0'), gc: layout[i][0], gr: layout[i][1], ts: '18px' }));
+    const is3d = this.state.f1Mode === '3d';
+    const on = { fg: '#11131d', bg: 'var(--color-neutral-100)' }, off = { fg: 'var(--color-neutral-300)', bg: 'transparent' };
+    const filters = ['All', 'Vehicle', 'Character', 'Product', 'Stylized'].map(label => {
+      const on = label === f;
+      return { label, c: label === 'All' ? C.violet : C[catColor[label]],
+        fg: on ? '#11131d' : 'var(--color-neutral-300)', bg: on ? 'var(--color-neutral-100)' : 'transparent',
+        pick: () => this.setState({ filter: label }) };
+    });
+    const games = [
+      { id: 'g-nyesa', file: 'Shadow.jpg', k: 'coral', title: 'Shadows of Nyesa', cat: 'Action · 3D', body: '3D action game with original environments and assets fully modeled and textured for the project.', href: 'https://pol-taug.itch.io/shadows-of-nyesa' },
+      { id: 'g-surf', file: 'GameJam.jpg', k: 'cyan', title: 'Surfers Sled Game Jam', cat: 'Racing · Game Jam', body: 'Game jam racing entry with custom 3D vehicles and props built during the jam.', href: 'https://pol-taug.itch.io/surfers-sled' },
+      { id: 'g-turbo', file: 'GameJam2.png', k: 'amber', title: 'Turbo Rush', cat: 'Racing · Game Jam', body: 'Fast-paced racing game jam entry with custom 3D assets and track environment.', href: 'https://the-als12.itch.io/turbo-rush' },
+    ].map((g, i) => ({ ...g, main: i === 0, img: base + g.file, ...col(g.k) }));
+    const jams = games.slice(1);
+    const imgs = {
+      keru: ['keruPortada', 'keru1', 'keru2', 'keru3', 'keru4'].map(n => base + n + '.jpg'),
+      livitum: ['Livitum1', 'Livitum2', 'Livitum3', 'Livitum4', 'Livitum5'].map(n => base + n + '.jpg'),
+    };
+    this._imgs = imgs;
+    const L = this.state.lb, stop = e => e.stopPropagation();
+    const lb = L ? { on: true, title: L.title, src: imgs[L.key][L.i], count: (L.i + 1) + ' / ' + imgs[L.key].length, stop,
+      close: e => { e && e.stopPropagation(); this.setState({ lb: null }); },
+      prev: e => { e.stopPropagation(); this.lbGo(-1); }, next: e => { e.stopPropagation(); this.lbGo(1); },
+      thumbs: imgs[L.key].map((src, i) => ({ src, op: i === L.i ? 1 : 0.45, ring: i === L.i ? '0 0 0 2px var(--color-neutral-100)' : 'none',
+        pick: e => { e.stopPropagation(); this.setState(s => ({ lb: { ...s.lb, i }, active: { ...s.active, [L.key]: i } })); } })) } : { on: false };
+    const mk = (key, k, rest) => {
+      const a = this.state.active[key], cc = col(k);
+      return { ...rest, ...cc, main: imgs[key][a], open: () => this.setState({ lb: { key, i: a, title: rest.name } }), thumbs: imgs[key].map((src, i) => ({
+        src, op: i === a ? 1 : 0.5,
+        ring: i === a ? `0 0 0 2px ${cc.c}` : 'none',
+        pick: () => this.setState(s => ({ active: { ...s.active, [key]: i } })),
+      })) };
+    };
+    const companies = [
+      mk('keru', 'amber', { icon: 'ph ph-map-trifold', kicker: 'Level Design · Video Game', name: 'Keru and the Guardians of the Universe', pre: 'Worked as ', bold: 'Level Designer', post: ' on this indie adventure game. Being a small studio, I was able to learn the full workflow of every department in a game company: production, art, programming, QA and marketing.', href: 'https://store.steampowered.com/app/3497440/Keru_and_the_Guardians_of_the_Universe/?l=spanish', cta: 'View on Steam' }),
+      mk('livitum', 'cyan', { icon: 'ph ph-buildings', kicker: 'Company · Collaboration', name: 'Livitum', pre: 'Professional collaboration with ', bold: 'Livitum', post: ', a company specialised in visual solutions. Applied 3D modeling and visualisation skills on real projects, developing assets and renders across their production pipeline.', href: 'https://www.livitum.com/', cta: 'View Website' }),
+    ];
+    const bars = [['3D Modeling', 92, 'violet'], ['Texturing & Materials', 85, 'pink'], ['Rendering & Lighting', 80, 'amber'], ['Game Engine Integration', 75, 'cyan'], ['Animation', 78, 'coral'], ['Programming', 50, 'green']]
+      .map(([label, v, k]) => ({ label, w: v + '%', c: C[k] }));
+    const tools = [
+      ['Blender', 'https://www.blender.org/'], ['Maya', 'https://www.autodesk.com/products/maya/overview'], ['ZBrush', 'https://www.maxon.net/zbrush'],
+      ['3ds Max', 'https://www.autodesk.com/products/3ds-max/overview'], ['Substance', 'https://www.adobe.com/products/substance3d-painter.html'],
+      ['Marmoset', 'https://www.marmoset.co/toolbag/'], ['Photoshop', 'https://www.adobe.com/products/photoshop.html'],
+      ['Premiere', 'https://www.adobe.com/products/premiere.html'], ['After Effects', 'https://www.adobe.com/products/aftereffects.html'],
+      ['Unity', 'https://unity.com/'], ['Unreal', 'https://www.unrealengine.com/'],
+    ].map(([name, href]) => ({ name, href, icon: base + ({ Blender: 'blender', ZBrush: 'zbrush', '3ds Max': '3ds-max', 'After Effects': 'after-effects' }[name] || name) + '.png' }));
+    const socials = [
+      { label: 'ArtStation', icon: 'ph ph-palette', href: 'https://www.artstation.com/poltaugourdeau' },
+      { label: 'Instagram', icon: 'ph ph-instagram-logo', href: 'https://www.instagram.com/3dtaug/' },
+      { label: 'itch.io', icon: 'ph ph-game-controller', href: 'https://pol-taug.itch.io/' },
+      { label: 'LinkedIn', icon: 'ph ph-linkedin-logo', href: 'https://www.linkedin.com/in/pol-taugourdeau-pascual-2a8639251/' },
+    ];
+    const contacts = [
+      { k: 'violet', icon: 'ph ph-envelope-simple', value: 'poltaugourdeau11@gmail.com', note: 'For projects & inquiries', href: 'mailto:poltaugourdeau11@gmail.com' },
+      { k: 'cyan', icon: 'ph ph-linkedin-logo', value: 'Pol Taugourdeau Pascual', note: 'Professional network', href: 'https://www.linkedin.com/in/pol-taugourdeau-pascual-2a8639251/' },
+      { k: 'amber', icon: 'ph ph-palette', value: 'poltaugourdeau', note: '3D portfolio', href: 'https://www.artstation.com/poltaugourdeau' },
+      { k: 'coral', icon: 'ph ph-game-controller', value: 'pol-taug', note: 'Game projects', href: 'https://pol-taug.itch.io/' },
+      { k: 'pink', icon: 'ph ph-instagram-logo', value: '@3dtaug', note: 'Daily work & updates', href: 'https://www.instagram.com/3dtaug/' },
+    ].map(x => ({ ...x, ...col(x.k) }));
+    return {
+      gridCols: `repeat(auto-fill,minmax(min(100%,${cols === 2 ? 440 : cols === 4 ? 230 : 300}px),1fr))`,
+      reelRef: this.reelRef, reelBox: this.reelBox, syncV: this.syncV, viewerRef: this.viewerRef, viewerOn: !!this.state.viewerOn, viewerMounted: !!this.state.viewerMounted, viewerHint: this.state.viewerMounted ? 'Ready · opens instantly · Esc to close' : 'Opens fullscreen · drag to rotate · Esc to close', viewerDisp: this.state.viewerOn ? 'block' : 'none', viewerOff: !this.state.viewerOn, viewerBox: this.viewerBox, posterSrc: this.state.poster || this.props.posterImage || 'uploads/imagenes/work1.jpg', posterOp: this.state.poster || this.props.posterImage ? 0.95 : 0.55, playBox: this.playBox, playOn: !!this.state.playing, playOff: !this.state.playing, playSrc: this.props.turboRushEmbed || 'https://the-als12.itch.io/turbo-rush', startPlay: this.startPlay, stopPlay: this.stopPlay, playFull: this.playFull, startViewer: this.openViewer, pz: this.state.viewerOn ? 3000 : 1, vw: this.state.viewerOn ? { pos: 'fixed', z: 2000, rad: '0' } : { pos: 'relative', z: 'auto', rad: '28px' }, togglePlay: this.togglePlay, seek: this.seek, back10: () => this.skip(-10), fwd10: () => this.skip(10), onTime: this.onTime, toggleMute: this.toggleMute, toggleFull: this.toggleFull,
+      rv: (() => { const v = this.reelRef.current, full = this.state.theater || this.state.fs, th = this.state.theater;
+        const paused = v ? v.paused : false, muted = v ? v.muted : true;
+        const fmt = t => { t = Math.max(0, Math.floor(t || 0)); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); };
+        const cur = v ? v.currentTime : 0, dur = v && isFinite(v.duration) ? v.duration : 0;
+        const sy = this.state.sy || 0, hh = (document.getElementById('hero') || {}).offsetHeight || innerHeight;
+        const imgOp = full ? 0 : Math.max(0, Math.min(1, (sy - hh * 0.45) / (hh * 0.35)));
+        return { imgOp, cur, dur, time: fmt(cur) + ' / ' + fmt(dur), full, dim: full ? 0 : Math.min(1, (this.state.sy || 0) / (innerHeight * 0.7)), ov: full ? 0 : 1, pos: 'fixed', z: full ? 1000 : 0, ar: th || this.state.fs ? 'auto' : '16/9', mh: th || this.state.fs ? 'none' : '80vh', h: th || this.state.fs ? '100%' : 'auto', rad: th || this.state.fs ? '0' : '20px', fit: full ? 'contain' : 'cover',
+          hint: full ? 'Esc to exit fullscreen' : 'Demo Reel · fullscreen turns the sound on',
+          playIcon: paused ? 'ph ph-play' : 'ph ph-pause', playLabel: paused ? 'Play' : 'Pause',
+          muteIcon: muted ? 'ph ph-speaker-slash' : 'ph ph-speaker-high', muteLabel: muted ? 'Unmute' : 'Mute',
+          fullIcon: full ? 'ph ph-corners-in' : 'ph ph-corners-out', fullLabel: full ? 'Exit fullscreen' : 'Fullscreen' }; })(), reelSrc: this.state.reelSrc || 'videos/reel.mp4',
+      reelPick: e => this.setReel(e.target.files[0]), reelDragOver: e => e.preventDefault(),
+      reelDrop: e => { e.preventDefault(); this.setReel(e.dataTransfer.files[0]); }, worksA: works.slice(0, 2), worksB: works.slice(2),
+      showRender: () => this.setState({ f1Mode: 'render' }), show3d: () => this.setState({ f1Mode: '3d' }),
+      lb, services, works, filters, games, jams, companies, bars, tools, socials, contacts,
+    };
+  }
+}
+</script>
+</body>
+</html>

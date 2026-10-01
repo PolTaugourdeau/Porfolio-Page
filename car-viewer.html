@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;color:#e9e9ed;font-family:Inter,system-ui,sans-serif;overflow:hidden}
+body{background:
+  radial-gradient(60% 55% at 50% 38%, #2a2b48 0%, transparent 70%),
+  radial-gradient(40% 40% at 15% 20%, color-mix(in oklch, oklch(0.62 0.16 290) 30%, transparent), transparent 70%),
+  radial-gradient(40% 40% at 88% 25%, color-mix(in oklch, oklch(0.7 0.12 210) 22%, transparent), transparent 70%),
+  linear-gradient(180deg,#151726 0%,#11131d 65%,#0d0e16 100%)}
+body::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 55%,rgba(8,9,14,.75) 100%)}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+#c:active{cursor:grabbing}
+.drop{position:absolute;inset:20px;z-index:2;border:1.5px dashed rgba(233,233,237,.2);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;transition:.2s}
+.drop.over{border-color:oklch(0.76 0.14 290);background:color-mix(in oklch,oklch(0.76 0.14 290) 10%,transparent)}
+.drop .ic{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;font-size:30px;color:oklch(0.76 0.14 290);background:color-mix(in oklch,oklch(0.76 0.14 290) 14%,transparent)}
+.drop h3{margin:0;font-size:20px;font-weight:600;letter-spacing:-.02em}
+.drop p{margin:0;font-size:13px;color:#b2b6ca;max-width:400px;line-height:1.55}
+.fmts{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.fmts span{font-size:11px;padding:3px 9px;border-radius:999px;background:rgba(233,233,237,.07);color:#cfd3e5}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:10px;font:500 13px Inter,sans-serif;cursor:pointer;border:1px solid rgba(233,233,237,.16);background:rgba(10,11,18,.55);backdrop-filter:blur(10px);color:#e9e9ed}
+.btn:hover{background:rgba(10,11,18,.8)}
+.btn.on{color:#11131d;background:#e9e9ed;border-color:#e9e9ed}
+.bar{position:absolute;z-index:2;left:20px;right:20px;bottom:20px;display:none;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;pointer-events:none}
+.bar>*{pointer-events:auto}
+.grp{display:flex;gap:6px;flex-wrap:wrap}
+.hint{position:absolute;z-index:2;top:20px;left:20px;display:none;align-items:center;gap:8px;font-size:12px;color:#b2b6ca;padding:6px 12px;border-radius:999px;background:rgba(10,11,18,.55);backdrop-filter:blur(8px)}
+.status{position:absolute;z-index:3;top:60px;left:20px;font-size:12px;color:#cfd3e5}
+#report{display:none;position:absolute;z-index:4;top:20px;left:20px;bottom:80px;width:min(640px,calc(100% - 40px));overflow:auto;padding:16px 18px;border-radius:14px;background:rgba(10,11,18,.92);backdrop-filter:blur(12px);border:1px solid rgba(233,233,237,.12);font-size:12px;color:#cfd3e5}
+#report .rh{display:flex;align-items:center;gap:10px;margin-bottom:8px}#report .rh b{font-size:14px;color:#e9e9ed}#report .rh span{flex:1;color:#9397ab}
+#report h4{margin:14px 0 6px;font-size:12px;color:#e9e9ed;font-weight:600}#report ul{margin:0;padding-left:16px}
+#report table{width:100%;border-collapse:collapse}#report th,#report td{text-align:left;padding:4px 6px;border-bottom:1px solid rgba(233,233,237,.07);white-space:nowrap}
+#report th{color:#9397ab;font-weight:500}#report tr.miss td{color:oklch(0.74 0.15 25)}
+#mats{display:none;position:absolute;z-index:4;top:60px;right:20px;width:min(280px,calc(100% - 40px));overflow:auto;padding:14px 16px;border-radius:14px;background:rgba(10,11,18,.9);backdrop-filter:blur(12px);border:1px solid rgba(233,233,237,.12);font-size:13px}
+#mats .mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}#mats .mh b{font-size:14px}
+#mats label.row{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:8px;cursor:pointer}#mats label.row:hover{background:rgba(233,233,237,.06)}
+#mats input[type=checkbox]{position:absolute;opacity:0;width:0;height:0}
+#mats .sw{position:relative;flex:none;width:38px;height:22px;border-radius:999px;background:rgba(233,233,237,.14);transition:background .2s}
+#mats .sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#e9e9ed;box-shadow:0 1px 4px rgba(0,0,0,.4);transition:transform .2s}
+#mats input:checked + .sw{background:linear-gradient(90deg,oklch(0.76 0.14 290),oklch(0.8 0.11 210))}
+#mats input:checked + .sw::after{transform:translateX(16px)}
+#mats input:focus-visible + .sw{outline:2px solid oklch(0.76 0.14 290);outline-offset:2px}
+#mats .dot{flex:none;width:10px;height:10px;border-radius:50%}
+#mats label.row{position:relative}#mats .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e4e7f5}
+#mats .op{display:flex;align-items:center;gap:10px;margin:6px 6px 12px;color:#9397ab;font-size:12px}#mats .op input{flex:1;accent-color:oklch(0.76 0.14 290)}
+.hide-btn{position:absolute;z-index:5;top:20px;right:20px;display:none;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:0;cursor:pointer;font:600 13px Inter,sans-serif;color:#11131d;
+  background:linear-gradient(90deg,oklch(0.8 0.13 290),oklch(0.82 0.11 210));box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 8px 28px color-mix(in oklch,oklch(0.7 0.14 290) 45%,transparent);transition:transform .15s,box-shadow .15s}
+.hide-btn:hover{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(255,255,255,.35) inset,0 12px 34px color-mix(in oklch,oklch(0.7 0.14 290) 60%,transparent)}
+.hide-btn.on{background:linear-gradient(90deg,oklch(0.86 0.1 290),oklch(0.88 0.09 210))}
+.loaded .hide-btn{display:inline-flex}
+.cams{position:absolute;z-index:5;top:20px;left:50%;transform:translateX(-50%);display:none;gap:2px;padding:4px;border-radius:999px;background:rgba(10,11,18,.7);backdrop-filter:blur(12px);border:1px solid rgba(233,233,237,.12)}
+.cams button{display:inline-flex;align-items:center;gap:6px;border:0;cursor:pointer;padding:8px 13px;border-radius:999px;font:500 12px Inter,sans-serif;color:#cfd3e5;background:transparent}
+.cams button:hover{background:rgba(233,233,237,.08);color:#e9e9ed}
+.cams button.on{color:#11131d;background:#e9e9ed}
+.cams button i{font-size:15px}
+.loaded .cams{display:flex}
+@media (max-width:820px){.cams{top:auto;bottom:76px}.hint{display:none!important}}
+.boot{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-size:14px;color:#cfd3e5}
+.booting .boot{display:flex}.booting .drop,.booting .bar,.booting .cams,.booting .hide-btn,.booting #mats,.booting .hint{display:none!important}.booting #c{opacity:0}
+.boot .spin{width:46px;height:46px;border-radius:50%;border:3px solid rgba(233,233,237,.12);border-top-color:oklch(0.76 0.14 290);border-right-color:oklch(0.8 0.11 210);animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loaded .drop{display:none}.loaded .bar,.loaded .hint{display:flex}
+</style>
+</head>
+<body class="booting">
+<div class="boot"><div class="spin"></div><span id="bootTxt">Loading F1 model…</span></div>
+<canvas id="c"></canvas>
+<div class="drop" id="drop">
+  <div class="ic"><i class="ph ph-cube"></i></div>
+  <h3>Drop the F1 model here</h3>
+  <p>Upload the model first (.glb, .fbx or a .zip / folder with everything). Then add a textures folder, a .zip or loose files — sub-folders and UDIM tiles (1001, 1002…) are supported.</p>
+  <div class="fmts"><span>.zip</span><span>.glb</span><span>.gltf</span><span>.fbx</span><span>+ png / jpg / tga</span></div>
+  <label class="btn"><i class="ph ph-upload-simple"></i>Choose files<input id="file" type="file" multiple accept=".zip,.glb,.gltf,.fbx,.bin,.png,.jpg,.jpeg,.tga,.webp" hidden></label>
+</div>
+<div class="hint"><i class="ph ph-hand-grabbing"></i><span id="hintTxt">Drag to rotate · Right-click to pan · Zoom in fullscreen</span></div>
+<div class="status" id="status"></div>
+<div id="report"></div>
+<div id="mats"></div>
+<div id="cams" class="cams">
+  <button data-cam="front"><i class="ph ph-arrow-circle-down"></i>Front</button>
+  <button data-cam="side"><i class="ph ph-arrows-left-right"></i>Side</button>
+  <button data-cam="top"><i class="ph ph-arrow-circle-up"></i>Top</button>
+  <button data-cam="rear"><i class="ph ph-arrow-u-up-left"></i>Rear</button>
+  <button data-cam="wheel"><i class="ph ph-steering-wheel"></i>Steering wheel</button>
+</div>
+<button id="matsBtn" class="hide-btn"><i class="ph ph-eye-slash"></i>Hide parts<i class="ph ph-caret-down" style="font-size:12px;opacity:.8"></i></button>
+<div class="bar">
+  <div class="grp">
+    <button class="btn on" id="spin"><i class="ph ph-arrows-clockwise"></i>Auto-rotate</button>
+    <button class="btn" id="reset"><i class="ph ph-crosshair"></i>Reset view</button>
+  </div>
+  <div class="grp">
+    <label class="btn"><i class="ph ph-folder-open"></i>Textures folder<input id="texdir" type="file" webkitdirectory directory multiple hidden></label>
+    <button class="btn" id="fs"><i class="ph ph-corners-out"></i><span>Fullscreen</span></button>
+  </div>
+</div>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { TGALoader } from 'three/addons/loaders/TGALoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { unzipSync } from 'three/addons/libs/fflate.module.js';
+import { TIFFLoader } from 'three/addons/loaders/TIFFLoader.js';
+import { EXRLoader } from 'three/addons/loaders/EXRLoader.js';
+
+const canvas = document.getElementById('c'), statusEl = document.getElementById('status');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.25));
+renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.85;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate = false;
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+const studioEnv = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environment = studioEnv;
+scene.environmentIntensity = 0.5;
+const camera = new THREE.PerspectiveCamera(32, 1, 0.01, 1000);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.18; controls.rotateSpeed = 0.7; controls.panSpeed = 0.7; controls.autoRotate = true; controls.autoRotateSpeed = 0.9;
+controls.maxPolarAngle = Math.PI * 0.49;
+controls.enableZoom = false;
+
+// One soft overhead key light; reflections come from the low-intensity studio environment
+const key = new THREE.DirectionalLight(0xfff6ec, 1.25); key.castShadow = true;
+key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -0.0004; key.shadow.radius = 14;
+scene.add(key, key.target);
+scene.add(new THREE.HemisphereLight(0xb4b9dd, 0x2a2b3a, 0.6));
+
+function radialTex(stops) {
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(256, 256, 0, 256, 256, 256); stops.forEach(([o, col]) => gr.addColorStop(o, col));
+  g.fillStyle = gr; g.fillRect(0, 0, 512, 512); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+// Studio floor: dark satin disc with fine circular grid, soft light pool, fades into the backdrop
+function floorTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 1024; const g = c.getContext('2d'), m = 512;
+  const base = g.createRadialGradient(m, m, 0, m, m, m);
+  base.addColorStop(0, '#2a2b44'); base.addColorStop(0.35, '#1b1c2e'); base.addColorStop(1, '#11131d');
+  g.fillStyle = base; g.fillRect(0, 0, 1024, 1024);
+  g.strokeStyle = 'rgba(180,170,255,0.07)'; g.lineWidth = 1.5;
+  for (let r = 40; r < m; r += 40) { g.beginPath(); g.arc(m, m, r, 0, Math.PI * 2); g.stroke(); }
+  for (let i = 0; i < 24; i++) { const t = i / 24 * Math.PI * 2; g.beginPath(); g.moveTo(m + Math.cos(t) * 40, m + Math.sin(t) * 40); g.lineTo(m + Math.cos(t) * m, m + Math.sin(t) * m); g.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+}
+const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 96), new THREE.MeshStandardMaterial({
+  map: floorTex(), roughness: 0.55, metalness: 0.15, transparent: true,
+  alphaMap: radialTex([[0, '#fff'], [0.6, '#fff'], [1, '#000']]) }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
+const shadow = new THREE.Mesh(new THREE.CircleGeometry(1, 96), new THREE.ShadowMaterial({ opacity: 0.28 }));
+shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.0005; shadow.receiveShadow = true;
+const ring = new THREE.Mesh(new THREE.RingGeometry(0.992, 1, 128), new THREE.MeshBasicMaterial({ color: 0xb5abfc, transparent: true, opacity: 0.18, depthWrite: false }));
+ring.rotation.x = -Math.PI / 2; ring.position.y = 0.002;
+const stage = new THREE.Group(); stage.add(floor, shadow, ring); scene.add(stage);
+
+let model = null, home = null, wire = false;
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+function frame(obj) {
+  const box = new THREE.Box3().setFromObject(obj), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+  obj.position.sub(new THREE.Vector3(c.x, box.min.y, c.z));
+  const r = Math.max(size.x, size.z) * 0.5 || 1, R = Math.max(size.x, size.y, size.z);
+  floor.scale.setScalar(r * 3.2); shadow.scale.setScalar(r * 2.2); ring.scale.setScalar(r * 1.5);
+  key.position.set(R * 0.6, R * 3, R * 0.9); key.target.position.set(0, 0, 0);
+  const s = key.shadow.camera; s.left = s.bottom = -R; s.right = s.top = R; s.near = 0.01; s.far = R * 10; s.updateProjectionMatrix();
+  controls.target.set(0, size.y * 0.35, 0);
+  camera.position.set(R * 1.25, R * 0.45, R * 1.45); camera.near = R / 100; camera.far = R * 100; camera.updateProjectionMatrix();
+  controls.minDistance = R * 0.04; controls.maxDistance = R * 5;
+  home = { p: camera.position.clone(), t: controls.target.clone() };
+}
+function disposeModel(o) {
+  o.traverse(x => { if (!x.isMesh) return; x.geometry.dispose();
+    [].concat(x.material).forEach(m => { for (const k in m) if (m[k] && m[k].isTexture) m[k].dispose(); m.dispose(); }); });
+}
+function setModel(obj) {
+  if (model) { scene.remove(model); disposeModel(model); }
+  model = obj;
+  obj.traverse(o => { if (o.isMesh) { o.castShadow = o.receiveShadow = true;
+    if (!Array.isArray(o.material) && !o.material.isMeshStandardMaterial) o.material = toStandard(o.material);
+    [].concat(o.material).forEach(m => { if (m.map) m.map.colorSpace = THREE.SRGBColorSpace; if (m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace; m.wireframe = wire; m.needsUpdate = true; }); } });
+  scene.add(obj); frame(obj); renderer.shadowMap.needsUpdate = true; setTimeout(() => { restoreView(); shot('34', 1); renderMats(); document.getElementById('mats').style.display = 'block'; document.getElementById('matsBtn').classList.add('on'); }, 0); document.body.classList.add('loaded'); statusEl.textContent = '';
+}
+// map keys: full relative paths (lowercase, "/" separated) plus bare file names
+function addToMap(map, e) {
+  const url = URL.createObjectURL(e.blob), p = (e.path || e.name).toLowerCase().replace(/\\/g, '/');
+  map[p] = url; if (!(e.name.toLowerCase() in map)) map[e.name.toLowerCase()] = url;
+}
+function resolveURL(map, u) {
+  if (u.startsWith('blob:') || u.startsWith('data:')) return null;
+  const segs = decodeURIComponent(u).toLowerCase().replace(/\\/g, '/').replace(/<udim>|\$udim|<uvtile>|u1_v1/g, '1001').split('/').filter(Boolean);
+  for (let k = Math.min(3, segs.length); k >= 2; k--) {
+    const tail = segs.slice(-k).join('/');
+    const hit = Object.keys(map).find(key => key === tail || key.endsWith('/' + tail)); if (hit) return map[hit];
+  }
+  return map[segs[segs.length - 1]] || null;
+}
+const BLANK = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=';
+function makeManager(map, skipImages) {
+  const m = new THREE.LoadingManager();
+  if (map) m.setURLModifier(u => (skipImages && /\.(png|jpe?g|tga|tiff?|webp|exr|bmp)$/i.test(decodeURIComponent(u).split('?')[0])) ? BLANK : (resolveURL(map, u) || u));
+  m.addHandler(/\.tga$/i, new TGALoader(m));
+  return m;
+}
+let last = null; // { url, ext, map }
+function load(url, ext, manager, map) {
+  last = { url, ext, map: map || {} };
+  statusEl.textContent = 'Loading…';
+  manager = manager || makeManager();
+  const L = ext === 'fbx' ? new FBXLoader(manager) : new GLTFLoader(manager);
+  return new Promise((res, rej) => L.load(url, r => { setModel(ext === 'fbx' ? r : r.scene); res(); },
+    e => { if (e.total) statusEl.textContent = 'Loading ' + Math.round(e.loaded / e.total * 100) + '%'; }, rej));
+}
+// ---------- Local cache: uploaded model + textures persist in this browser ----------
+const DB = { open: () => new Promise((ok, bad) => { const r = indexedDB.open('pt-viewer', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => bad(r.error); }),
+  async get(k) { const d = await this.open(); return new Promise(ok => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => ok(q.result); q.onerror = () => ok(null); }); },
+  async set(k, v) { const d = await this.open(); return new Promise(ok => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = () => ok(); t.onerror = () => { console.warn('IndexedDB write failed', t.error); ok(); }; t.onabort = () => { console.warn('IndexedDB aborted', t.error); ok(); }; }); } };
+const pack = es => es.map(e => ({ name: e.name, path: e.path, blob: e.blob }));
+async function shrinkForCache(e) {
+  if (!/\.(png|jpe?g|webp)$/i.test(e.name)) return e;
+  try {
+    const color = /(base.?colou?r|albedo|diffuse|emissi)/i.test(e.name), close = /volante|uv[_\s-]*0?(8|9)[^0-9]/i.test(e.path || e.name);
+    const lim = (color || close) ? 2048 : 1024, p = await createImageBitmap(e.blob), W = p.width, H = p.height; p.close && p.close();
+    const k = Math.min(1, lim / Math.max(W, H)); if (k >= 1 && e.blob.size < 6e6) return e;
+    const bmp = await createImageBitmap(e.blob, { resizeWidth: Math.max(1, Math.round(W * k)), resizeHeight: Math.max(1, Math.round(H * k)), resizeQuality: 'high', premultiplyAlpha: 'none', colorSpaceConversion: 'none' });
+    const cv = new OffscreenCanvas(bmp.width, bmp.height); cv.getContext('2d').drawImage(bmp, 0, 0); bmp.close && bmp.close();
+    const blob = await cv.convertToBlob({ type: 'image/webp', quality: 0.95 });
+    return { name: e.name, path: e.path, blob };
+  } catch (err) { return e; }
+}
+async function packSmall(es) { const out = []; for (const e of es) out.push(await shrinkForCache(e)); return pack(out); }
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+let restoring = false;
+const isModel = n => /\.(glb|gltf|fbx)$/i.test(n);
+const pickMain = names => names.find(n => /\.glb$/i.test(n)) || names.find(n => /\.gltf$/i.test(n)) || names.find(n => /\.fbx$/i.test(n));
+async function filesToEntries(files) {
+  const out = [];
+  for (const f of files) {
+    if (/\.zip$/i.test(f.name)) {
+      statusEl.textContent = 'Unzipping…';
+      const z = unzipSync(new Uint8Array(await f.arrayBuffer()));
+      for (const [path, data] of Object.entries(z)) {
+        if (path.endsWith('/') || /__MACOSX|\/\._/.test(path)) continue;
+        out.push({ name: path.split('/').pop(), path, blob: new Blob([data]) });
+      }
+    } else out.push({ name: f.name, path: f._path || f.webkitRelativePath || f.name, blob: f });
+  }
+  return out;
+}
+async function handleEntries(entries) {
+  if (!restoring) { packSmall(entries).then(p => DB.set('model', p)).catch(() => {}); DB.set('textures', []).catch(() => {}); }
+  const main = pickMain(entries.map(e => e.name));
+  if (!main) { statusEl.textContent = 'No .glb, .gltf or .fbx found'; return; }
+  const map = {}; entries.forEach(e => addToMap(map, e));
+  const hasImgs = entries.some(e => IMG.test(e.name));
+  await load(map[main.toLowerCase()], main.split('.').pop().toLowerCase(), makeManager(map, hasImgs), map)
+    .catch(err => { console.error(err); statusEl.textContent = 'Could not load this file'; });
+  if (model && entries.some(e => IMG.test(e.name))) { failed = []; await applyTextures(entries); }
+}
+async function handleFiles(files) {
+  try { await handleEntries(await filesToEntries([...files])); }
+  catch (e) { console.error(e); statusEl.textContent = 'Could not read this file'; }
+}
+const drop = document.getElementById('drop');
+addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+addEventListener('dragleave', () => drop.classList.remove('over'));
+addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); const dt = e.dataTransfer;
+  (async () => { const fs = await readDropped(dt); if (model && !(await filesToEntries(fs)).some(x => isModel(x.name))) addTextures(fs); else handleFiles(fs); })(); });
+document.getElementById('file').addEventListener('change', e => handleFiles(e.target.files));
+const spin = document.getElementById('spin');
+spin.onclick = () => { controls.autoRotate = !controls.autoRotate; spin.classList.toggle('on', controls.autoRotate); saveView(); };
+document.getElementById('reset').onclick = () => { if (!home) return; soloWheel = false; shot('34'); document.querySelectorAll('#cams button').forEach(x => x.classList.remove('on')); };
+
+// ---------- Textures: loose files, .zip or whole folders; supports UDIM tiles (1001, 1002…) ----------
+const texLoader = new THREE.TextureLoader(), tgaLoader = new TGALoader();
+// Channel is read from the name's own tokens (last match wins), so material names like "BlackMetal" don't confuse it
+const CH = [
+  ['orm', /^(orm|occlusionroughnessmetallic|arm)$/],
+  ['normalMap', /^(normal|normalgl|normalopengl|normaldirectx|normaldx|nrm|nor|n)$/],
+  ['roughnessMap', /^(roughness|rough|rgh|r)$/],
+  ['metalnessMap', /^(metallic|metalness|metal|mtl|m)$/],
+  ['aoMap', /^(ao|ambientocclusion|occlusion|mixedao)$/],
+  ['emissiveMap', /^(emissive|emission|emit|e)$/],
+  ['alphaMap', /^(opacity|alpha|mask)$/],
+  ['map', /^(basecolor|basecolour|albedo|diffuse|color|colour|col|bc|d|base)$/],
+];
+const IMG = /\.(png|jpe?g|tga|webp|tiff?|exr)$/i;
+const MAX_TEX = Math.min(2048, renderer.capabilities.maxTextureSize); // color maps
+const MAX_DATA = 1024; // normal / roughness / metal / AO
+const norm = s => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+// UDIM tile from folders like "UV_01_carroceria" → 1001, "UV_09_Volante_02" → 1009, or a "1003" folder
+function tileFromPath(path) {
+  const dirs = (path || '').toLowerCase().replace(/\\/g, '/').split('/').slice(0, -1).reverse();
+  for (const d of dirs) {
+    let m = d.match(/(?:^|[^0-9])(1\d{3})(?:[^0-9]|$)/); if (m) return +m[1];
+    m = d.match(/^(?:uv|udim|tile)[\s_\-]*0*(\d{1,2})(?:[^0-9]|$)/); if (m) return 1000 + +m[1];
+  }
+  return null;
+}
+function parseTex(name, path) {
+  const r = parseTexName(name);
+  if (r.tile == null) { const ft = tileFromPath(path); if (ft) { r.tile = ft; r.fromFolder = true; } }
+  return r;
+}
+function parseTexName(name) {
+  const stem = name.toLowerCase().replace(/\.[^.]+$/, '');
+  let toks = stem.split(/[._\-\s]+/).filter(Boolean);
+  let tile = null;
+  toks = toks.filter(t => { if (/^1\d{3}$/.test(t)) { tile = +t; return false; } return true; });
+  // handle joined tokens like "basecolor" / "OcclusionRoughnessMetallic"; also "Normal_OpenGL"
+  let slot = null, at = -1;
+  for (let i = toks.length - 1; i >= 0 && !slot; i--) {
+    const t = toks[i], two = i > 0 ? toks[i - 1] + t : null;
+    if (two) { const c = CH.find(([, re]) => re.test(two)); if (c) { slot = c[0]; at = i - 1; break; } }
+    const c = CH.find(([, re]) => re.test(t)); if (c && !(t.length === 1 && i !== toks.length - 1)) { slot = c[0]; at = i; }
+  }
+  if (slot === 'normalMap' && at > 0 && /^(normal)$/.test(toks[at - 1])) at--;
+  const set = norm(toks.slice(0, at < 0 ? toks.length : at).join(''));
+  return { tile, slot, set };
+}
+const tiffLoader = new TIFFLoader(), exrLoader = new EXRLoader();
+async function loadTex(e, flip, srgb) {
+  const LIMIT = (srgb || /volante|uv[_\s-]*0?(8|9)[^0-9]/i.test(e.path || e.name)) ? MAX_TEX : MAX_DATA; // close-up parts keep full 2K
+  try {
+    let t;
+    if (/\.(png|jpe?g|webp)$/i.test(e.name)) {
+      const probe = await createImageBitmap(e.blob);
+      const W = probe.width, H = probe.height, k = Math.min(1, LIMIT / Math.max(W, H)); probe.close && probe.close();
+      const bmp = await createImageBitmap(e.blob, { imageOrientation: flip ? 'flipY' : 'none', premultiplyAlpha: 'none', colorSpaceConversion: 'none',
+        ...(k < 1 ? { resizeWidth: Math.max(1, Math.round(W * k)), resizeHeight: Math.max(1, Math.round(H * k)), resizeQuality: 'high' } : {}) });
+      t = new THREE.Texture(bmp); t.flipY = false; t.needsUpdate = true;
+    } else {
+      const url = URL.createObjectURL(e.blob);
+      const L = /\.tga$/i.test(e.name) ? tgaLoader : /\.tiff?$/i.test(e.name) ? tiffLoader : exrLoader;
+      t = await new Promise((ok, bad) => L.load(url, ok, undefined, bad));
+      t.flipY = flip; t.needsUpdate = true;
+    }
+    t.name = (e.path || e.name); t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.anisotropy = 4;
+    t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.generateMipmaps = true;
+    return t;
+  } catch (err) { console.warn('Texture failed', e.name, err); failed.push(e.name); return null; }
+}
+let failed = [];
+function toStandard(m) {
+  if (m.isMeshStandardMaterial) return m;
+  return new THREE.MeshStandardMaterial({ name: m.name, color: m.color ? m.color.clone() : 0xffffff, map: m.map || null,
+    normalMap: m.normalMap || null, emissive: m.emissive ? m.emissive.clone() : 0x000000, emissiveMap: m.emissiveMap || null,
+    transparent: false, opacity: 1, side: THREE.DoubleSide, roughness: 0.6, metalness: 0.1 });
+}
+const tileOfUV = (u, v) => 1001 + Math.max(0, Math.min(9, Math.floor(u + 1e-5))) + 10 * Math.max(0, Math.floor(v + 1e-5));
+// Split one mesh into a geometry group per UDIM tile; triangles are un-welded so every triangle shifts by its own tile
+function udimSplit(mesh) {
+  let g = mesh.geometry; if (!g.attributes.uv) return [1001];
+  if (g.userData.udimTiles) return g.userData.udimTiles;
+  const oldGroups = g.groups.length ? g.groups.map(x => ({ ...x })) : [{ start: 0, count: (g.index ? g.index.count : g.attributes.position.count), materialIndex: 0 }];
+  if (g.index) { const ni = g.toNonIndexed(); ni.groups = []; g = ni; }
+  const uv = g.attributes.uv, triCount = uv.count / 3;
+  const triTile = new Array(triCount), triMat = new Array(triCount).fill(0);
+  oldGroups.forEach(gr => { for (let t = gr.start / 3; t < (gr.start + gr.count) / 3; t++) triMat[t] = gr.materialIndex || 0; });
+  for (let t = 0; t < triCount; t++) {
+    const i = t * 3, cu = (uv.getX(i) + uv.getX(i + 1) + uv.getX(i + 2)) / 3, cv = (uv.getY(i) + uv.getY(i + 1) + uv.getY(i + 2)) / 3;
+    const tile = tileOfUV(cu, cv); triTile[t] = tile;
+    const du = (tile - 1001) % 10, dv = Math.floor((tile - 1001) / 10);
+    for (let k = 0; k < 3; k++) uv.setXY(i + k, uv.getX(i + k) - du, uv.getY(i + k) - dv);
+  }
+  uv.needsUpdate = true;
+  // reorder triangles by (material, tile) and build groups
+  const order = [...Array(triCount).keys()].sort((x, y) => triMat[x] - triMat[y] || triTile[x] - triTile[y]);
+  const index = []; order.forEach(t => index.push(t * 3, t * 3 + 1, t * 3 + 2)); g.setIndex(index);
+  const combos = []; let start = 0;
+  order.forEach((t, k) => { const key = triMat[t] + ':' + triTile[t];
+    if (!combos.length || combos[combos.length - 1].key !== key) combos.push({ key, mat: triMat[t], tile: triTile[t], start: k * 3, count: 0 });
+    combos[combos.length - 1].count += 3; });
+  g.clearGroups(); combos.forEach((c, i) => g.addGroup(c.start, c.count, i));
+  g.userData.udimTiles = combos; mesh.geometry = g;
+  return combos;
+}
+async function applyTextures(entries) {
+  if (!model) return { n: 0 };
+  const flip = !(last && last.ext !== 'fbx');
+  const texs = entries.filter(e => IMG.test(e.name)).map(e => ({ e, key: e.path || e.name, ...parseTex(e.name, e.path) }));
+  const usable = texs.filter(t => t.slot);
+  if (!usable.length) return { n: 0, unmatched: texs.length };
+  const sets = [...new Set(usable.map(t => t.set))];
+  // Fuzzy match material/mesh names to texture-set names by shared words
+  const STOP = new Set(['uv','mat','material','mtl','lambert','phong','blinn','standard','surface','sg','shader','aistandard','aistandardsurface','tex','texture','set']);
+  const words = s => (s || '').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase().split(/[^a-z0-9]+/)
+    .map(w => w.replace(/\d+$/, '')).filter(w => w.length > 1 && !STOP.has(w));
+  const setWords = new Map(); usable.forEach(t => { if (!setWords.has(t.set)) setWords.set(t.set, words(t.e.name.replace(/\.[^.]+$/, '').split(/[_\-\s.]+/).slice(0, -1).join(' ')).concat(words((t.e.path || '').split('/').slice(-2, -1)[0]))); });
+  const score = (nm, st) => { const a = words(nm), b = setWords.get(st) || []; let s = 0;
+    a.forEach(w => b.forEach(x => { if (w === x) s += w.length * 2; else if (w.length > 3 && x.length > 3 && (w.includes(x) || x.includes(w))) s += Math.min(w.length, x.length); }));
+    const na = norm(nm); if (na && st && (st.includes(na) || na.includes(st))) s += 20;
+    // numbered variants (Volante_01 vs Volante_02): reward the same number, penalise a different one
+    const nums = x => ((x || '').match(/\d+/g) || []).map(n => +n).filter(n => n < 100);
+    const nA = nums(nm.replace(/^uv[_\s-]*\d+/i, '')), nB = nums(st.replace(/^uv\d+/, ''));
+    if (nA.length && nB.length) s += nA.some(n => nB.includes(n)) ? 8 : -8;
+    return s; };
+  const findSet = (...names) => {
+    if (sets.length === 1) return sets[0];
+    let best = null, bs = 0;
+    for (const nm of names) for (const st of sets) { const sc = score(nm, st); if (sc > bs) { bs = sc; best = st; } }
+    return best;
+  };
+
+  const cache = new Map(), used = new Set();
+  const get = async t => { if (!cache.has(t.key)) cache.set(t.key, await loadTex(t.e, flip, t.slot === 'map' || t.slot === 'emissiveMap')); used.add(t.key); return cache.get(t.key); };
+  const fill = async (m, list) => {
+    if (list[0]) m.userData.src = list[0].e.path || list[0].e.name;
+    for (const t of list) {
+      const tex = await get(t); if (!tex) continue;
+      if (t.slot === 'orm') { m.aoMap = tex; m.roughnessMap = tex; m.metalnessMap = tex; m.roughness = 1; m.metalness = 1; continue; }
+      m[t.slot] = tex;
+      if (t.slot === 'map') m.color.set(0xffffff);
+      if (t.slot === 'roughnessMap') m.roughness = 1;
+      if (t.slot === 'metalnessMap') m.metalness = 1;
+      if (t.slot === 'emissiveMap') m.emissive.set(0xffffff);
+      if (t.slot === 'alphaMap') { m.transparent = true; m.alphaTest = 0.3; }
+    }
+    if (list.length) {
+      m.side = THREE.DoubleSide; m.shadowSide = THREE.DoubleSide;
+      if (!m.alphaMap) { m.transparent = false; m.opacity = 1; m.alphaTest = 0; m.depthWrite = true; }
+      if (m.normalMap) m.normalScale.set(1, 1);
+      delete m.userData.orig;
+    }
+    m.needsUpdate = true;
+  };
+  const report = []; let n = 0;
+  const meshes = []; model.traverse(o => o.isMesh && meshes.push(o));
+  // Does the model actually use UDIM space? If not, folders are per-material sets instead of tiles.
+  let modelUdim = false;
+  model.traverse(o => { if (modelUdim || !o.isMesh || !o.geometry.attributes.uv) return; const uv = o.geometry.attributes.uv;
+    if (o.geometry.userData.udimTiles) { modelUdim = o.geometry.userData.udimTiles.some(c => c.tile > 1001); return; }
+    for (let i = 0; i < uv.count; i += 7) if (uv.getX(i) > 1.001 || uv.getY(i) > 1.001) { modelUdim = true; break; } });
+  if (!modelUdim) usable.forEach(t => { if (t.fromFolder) {
+    const dir = (t.e.path || '').split('/').slice(-2, -1)[0] || '';
+    t.set = norm(dir.replace(/^(uv|udim|tile)[\s_\-]*\d{1,2}[\s_\-]*/i, '')); t.tile = null; } });
+  if (!modelUdim) { sets.length = 0; sets.push(...new Set(usable.map(t => t.set))); }
+  const uvTile = t => { const mm = t.e.name.toLowerCase().match(/^uv[\s_\-]*0*(\d{1,2})(?:[^0-9]|$)/); return mm ? 1000 + +mm[1] : null; };
+  const anyUdim = modelUdim && usable.some(t => t.tile || uvTile(t));
+  for (const mesh of meshes) {
+    const mats = [].concat(mesh.material).map(toStandard);
+    if (anyUdim) {
+      const combos = udimSplit(mesh), out = [];
+      for (const c of combos) {
+        const base = mats[c.mat] || mats[0];
+        let set = findSet(base.name, mesh.name);
+        const forTile = st => usable.filter(t => t.set === st && (t.tile === c.tile || (!t.tile && c.tile === 1001)));
+        if (set == null || !forTile(set).length) {
+          // fall back to whichever texture set actually has this tile
+          const cands = sets.filter(st => forTile(st).length);
+          if (cands.length === 1) set = cands[0];
+          else if (cands.length > 1) set = cands.sort((x, y) => forTile(y).length - forTile(x).length)[0];
+        }
+        let list = set == null ? [] : forTile(set);
+        // Sets exported per UV shell as "UV_02_…_1001" belong to UDIM tile 1002
+        if (!list.length) list = usable.filter(t => uvTile(t) === c.tile);
+        const m = base.clone(); m.userData = { group: groupLabel(list, base.name), uv: uvIndex(list) };
+        if (list.length) { ['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap','alphaMap'].forEach(k => m[k] = null); await fill(m, list); n += list.length; }
+        else if (base.map) { /* keep whatever the FBX already linked */ }
+        report.push({ mesh: mesh.name, material: base.name, tile: c.tile, set: set ?? '—', maps: list.map(t => t.slot).join(', ') || 'none' });
+        out.push(m);
+      }
+      mesh.material = out;
+    } else {
+      for (const m of mats) {
+        const set = findSet(m.name, mesh.name);
+        const list = set == null ? [] : usable.filter(t => t.set === set);
+        m.userData.group = groupLabel(list, m.name); m.userData.uv = uvIndex(list);
+        if (list.length) { await fill(m, list); n += list.length; }
+        report.push({ mesh: mesh.name, material: m.name, tile: '-', set: set ?? '—', maps: list.map(t => t.slot).join(', ') || 'none' });
+      }
+      mesh.material = Array.isArray(mesh.material) ? mats : mats[0];
+    }
+  }
+  const _miss = report.filter(r => r.maps === 'none').length;
+  lastReport = { rows: report, unused: texs.filter(t => !used.has(t.key)).map(t => t.key + (t.slot ? '' : '  (unknown map type)')), failed: [...failed], total: texs.length };
+  hidden.size || xray ? applyTransparency() : 0; saveView();
+  setTimeout(makePoster, 1500);
+  renderReport();
+
+  console.table(report);
+  console.log('Unused textures:', texs.filter(t => !used.has(t.key)).map(t => t.e.name));
+  renderer.shadowMap.needsUpdate = true;
+  return { n, unmatched: texs.filter(t => !used.has(t.key)).length, missing: report.filter(r => r.maps === 'none').length };
+}
+let lastReport = null;
+function groupLabel(list, fallback) {
+  const t = list && list[0]; if (!t) return fallback || 'Material';
+  const dir = (t.e.path || '').split('/').slice(-2, -1)[0];
+  if (dir) return dir.replace(/^(uv|udim|tile)[\s_\-]*\d{1,2}[\s_\-]*/i, '').replace(/_/g, ' ');
+  const toks = t.e.name.replace(/\.[^.]+$/, '').split(/[_\-.\s]+/);
+  return toks.slice(toks[0].toLowerCase() === 'uv' ? 2 : 0, Math.max(1, toks.length - 2)).join(' ') || fallback;
+}
+function uvIndex(list) {
+  const t = list && list[0]; if (!t) return null;
+  const src = ((t.e.path || '').split('/').slice(-2, -1)[0] || '') + ' ' + t.e.name;
+  const m = src.toLowerCase().match(/(?:^|[^a-z])uv[\s_\-]*0*(\d{1,2})(?:[^0-9]|$)/); return m ? +m[1] : null;
+}
+// ---------- X-ray + hide parts ----------
+const PARTS = [
+  { id: 'body', color: 'oklch(0.76 0.14 290)', label: 'Carrocería', uv: 1, re: /^(?!.*interior).*carroc?eria/ },
+  { id: 'inner', color: 'oklch(0.75 0.14 340)', label: 'Interior carrocería', uv: 3, re: /interior.*carroc?eria/ },
+  { id: 'wing', color: 'oklch(0.82 0.13 75)', label: 'Alerón', uv: 4, re: /aleron/ },
+  { id: 'wheels', color: 'oklch(0.8 0.11 210)', label: 'Ruedas', uv: 5, re: /rueda/ },
+];
+let xray = false, soloWheel = false; const hidden = new Set();
+const isWheel = m => m.userData.uv === 8 || m.userData.uv === 9
+  || /volante|steering/i.test([m.userData.group, m.name, m.userData.src, m.map && m.map.name].filter(Boolean).join(' '))
+  || /uv[_\s-]*0?(8|9)(?:[^0-9]|$)/i.test([m.userData.src, m.map && m.map.name].filter(Boolean).join(' '));
+function allMats() { const out = []; model && model.traverse(o => o.isMesh && [].concat(o.material).forEach(m => out.push(m))); return out; }
+function partOf(m) {
+  const g = (m.userData.group || m.name || '').toLowerCase().replace(/\s+/g, '');
+  return PARTS.find(p => m.userData.uv === p.uv) || PARTS.find(p => p.re.test(g));
+}
+function applyTransparency() {
+  allMats().forEach(m => {
+    if (!m.userData.orig) m.userData.orig = { transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite };
+    const o = m.userData.orig, p = partOf(m);
+    const wheel = soloWheel && isWheel(m), ghost = soloWheel && !wheel;
+    m.visible = soloWheel ? true : !(p && hidden.has(p.id));
+    m.transparent = ghost ? true : o.transparent; m.opacity = ghost ? 0.0 : o.opacity; m.depthWrite = ghost ? false : o.depthWrite;
+    if (ghost) m.visible = false;
+    m.needsUpdate = true;
+  });
+  renderer.shadowMap.needsUpdate = true;
+}
+function renderMats() {
+  const el = document.getElementById('mats');
+  el.innerHTML = '<div class="mh"><b>Hide parts</b><button class="btn" id="mclose">Close</button></div>'
+    + PARTS.map(p => '<label class="row"><span class="dot" style="background:' + p.color + ';box-shadow:0 0 8px ' + p.color + '"></span><span class="nm">' + p.label + '<br><span style="font-size:11px;color:#75798c">UV_0' + p.uv + ' · hide</span></span><input type="checkbox" data-p="' + p.id + '"' + (hidden.has(p.id) ? ' checked' : '') + '><span class="sw"></span></label>').join('');
+  el.querySelectorAll('input[type=checkbox]').forEach(cb => cb.onchange = () => { cb.checked ? hidden.add(cb.dataset.p) : hidden.delete(cb.dataset.p); soloWheel = false; document.querySelector('#cams [data-cam=wheel]').classList.remove('on'); applyTransparency(); saveView(); });
+  el.querySelector('#mclose').onclick = () => { el.style.display = 'none'; document.getElementById('matsBtn').classList.remove('on'); };
+}
+
+// ---------- Camera presets ----------
+let tween = null;
+function flyTo(pos, tgt, dur = 900) {
+  const p0 = camera.position.clone(), t0 = controls.target.clone(), start = performance.now();
+  controls.autoRotate = false; document.getElementById('spin').classList.remove('on');
+  tween = now => { const k = Math.min(1, (now - start) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    camera.position.lerpVectors(p0, pos, e); controls.target.lerpVectors(t0, tgt, e); if (k >= 1) { tween = null; saveView(); } };
+}
+function boxOf(test) {
+  const b = new THREE.Box3(); let any = false;
+  model.updateMatrixWorld(true);
+  model.traverse(o => { if (!o.isMesh) return; const mats = [].concat(o.material); if (!mats.some(test)) return;
+    const g = o.geometry; if (!g.boundingBox) g.computeBoundingBox();
+    if (Array.isArray(o.material) && g.groups.length) {
+      const pos = g.attributes.position, idx = g.index, v = new THREE.Vector3();
+      g.groups.forEach(gr => { if (!test(mats[gr.materialIndex])) return;
+        for (let i = gr.start; i < gr.start + gr.count; i += 3) { v.fromBufferAttribute(pos, idx ? idx.getX(i) : i).applyMatrix4(o.matrixWorld); b.expandByPoint(v); any = true; } });
+    } else { b.union(g.boundingBox.clone().applyMatrix4(o.matrixWorld)); any = true; }
+  });
+  return any ? b : null;
+}
+function shot(name, dur) {
+  if (!model) return;
+  const box = new THREE.Box3().setFromObject(model), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+  const R = Math.max(size.x, size.y, size.z), longX = size.x >= size.z;
+  let f = longX ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
+  const side = longX ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0), up = new THREE.Vector3(0, 1, 0);
+  const wb = boxOf(isWheel);
+  // forward = side of the car the cockpit/wheel leans toward
+  if (wb) { const wc = wb.getCenter(new THREE.Vector3()); if (wc.clone().sub(c).dot(f) < 0) f.negate(); }
+  soloWheel = name === 'wheel'; applyTransparency();
+  const tgt = c.clone().setY(size.y * 0.35);
+  if (name === '34') flyTo(c.clone().addScaledVector(f, R * 0.85).addScaledVector(side, R * 0.85).addScaledVector(up, R * 0.32), tgt, dur);
+  if (name === 'front') flyTo(c.clone().addScaledVector(f, R * 1.15).addScaledVector(up, R * 0.12), tgt);
+  if (name === 'rear')  flyTo(c.clone().addScaledVector(f, -R * 1.15).addScaledVector(up, R * 0.2), tgt);
+  if (name === 'side')  flyTo(c.clone().addScaledVector(side, R * 1.25).addScaledVector(up, R * 0.1), tgt);
+  if (name === 'top')   flyTo(c.clone().addScaledVector(up, R * 1.5 / Math.min(1, camera.aspect * 0.9)).addScaledVector(side, R * 0.02), c.clone());
+  if (name === 'wheel') {
+    const b = wb || new THREE.Box3().setFromCenterAndSize(c.clone().setY(size.y * 0.6), new THREE.Vector3(R * .06, R * .06, R * .06));
+    const wc = b.getCenter(new THREE.Vector3()), ws = Math.max(...b.getSize(new THREE.Vector3()).toArray()) || R * 0.06;
+    flyTo(wc.clone().addScaledVector(f, -ws * 2.2).addScaledVector(up, ws * 0.35), wc);
+  }
+  document.querySelectorAll('#cams button').forEach(x => x.classList.toggle('on', x.dataset.cam === name));
+}
+document.querySelectorAll('#cams button').forEach(b => b.onclick = () => shot(b.dataset.cam));
+
+
+// Remember view settings + camera between visits
+const VKEY = 'pt-viewer-state';
+function saveView() {
+  try { localStorage.setItem(VKEY, JSON.stringify({ hidden: [...hidden], xray, spin: controls.autoRotate,
+    cam: camera.position.toArray(), tgt: controls.target.toArray() })); } catch (e) {}
+}
+function restoreView() {
+  let s; try { s = JSON.parse(localStorage.getItem(VKEY) || 'null'); } catch (e) {} if (!s) return;
+  hidden.clear(); xray = false;
+  controls.autoRotate = s.spin !== false; document.getElementById('spin').classList.toggle('on', controls.autoRotate);
+
+  applyTransparency();
+}
+let saveT = 0; controls.addEventListener('change', () => { clearTimeout(saveT); saveT = setTimeout(saveView, 400); });
+addEventListener('pagehide', saveView);
+document.getElementById('matsBtn').onclick = () => { const el = document.getElementById('mats'); if (!model) return; const show = el.style.display !== 'block'; if (show) renderMats(); el.style.display = show ? 'block' : 'none'; document.getElementById('matsBtn').classList.toggle('on', show); };
+function renderReport() {
+  const el = document.getElementById('report'); if (!lastReport) return;
+  const r = lastReport, esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+  const missing = r.rows.filter(x => x.maps === 'none');
+  el.innerHTML = '<div class="rh"><b>Texture report</b><span>' + r.total + ' images · ' + (r.rows.length - missing.length) + '/' + r.rows.length + ' parts textured</span><button id="rclose" class="btn">Close</button></div>'
+    + (r.failed.length ? '<h4>Could not decode (' + r.failed.length + ')</h4><ul>' + r.failed.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '')
+    + '<h4>Parts</h4><table><tr><th>Mesh</th><th>Material</th><th>Tile</th><th>Set</th><th>Maps</th></tr>'
+    + r.rows.map(x => '<tr class="' + (x.maps === 'none' ? 'miss' : '') + '"><td>' + esc(x.mesh) + '</td><td>' + esc(x.material) + '</td><td>' + x.tile + '</td><td>' + esc(x.set) + '</td><td>' + esc(x.maps) + '</td></tr>').join('') + '</table>'
+    + (r.unused.length ? '<h4>Unused files (' + r.unused.length + ')</h4><ul>' + r.unused.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '');
+  document.getElementById('rclose').onclick = () => el.style.display = 'none';
+}
+const _repBtn = document.getElementById('rep'); if (_repBtn) _repBtn.onclick = () => { const el = document.getElementById('report'); if (!lastReport) { statusEl.textContent = 'Add textures first'; return; } el.style.display = el.style.display === 'block' ? 'none' : 'block'; };
+async function addTextures(files, preEntries) { failed = [];
+  if (!last) { statusEl.textContent = 'Load a model first'; return; }
+  statusEl.textContent = 'Reading textures…';
+  const entries = preEntries || await filesToEntries([...files]);
+  if (!restoring) { (async () => {
+    const prev = (await DB.get('textures').catch(() => null)) || [];
+    const small = await packSmall(entries.filter(e => IMG.test(e.name)));
+    const keep = prev.filter(p => !small.some(s => (s.path || s.name) === (p.path || p.name)));
+    await DB.set('textures', keep.concat(small));
+  })().catch(e => console.warn('cache failed', e)); }
+  const imgs = entries.filter(e => IMG.test(e.name)).length;
+  const map = { ...last.map }; entries.forEach(e => addToMap(map, e));
+  statusEl.textContent = 'Applying ' + imgs + ' textures…';
+  last.map = map;
+  try { await load(last.url, last.ext, makeManager(map, true), map); } catch (e) { console.error(e); }
+  const r = await applyTextures(entries);
+  statusEl.textContent = r.n ? r.n + ' maps applied' + (r.unmatched ? ' · ' + r.unmatched + ' unused' : '') + (r.missing ? ' · ' + r.missing + ' parts without textures' : '') : 'No matching textures found (' + imgs + ' images)';
+  setTimeout(() => statusEl.textContent = '', 6000);
+}
+// Read dropped folders recursively
+async function readDropped(dt) {
+  const items = [...(dt.items || [])].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+  if (!items.length) return [...dt.files];
+  const out = [];
+  const walk = (entry) => new Promise(res => {
+    if (entry.isFile) entry.file(f => { f._path = entry.fullPath.replace(/^\//, ''); out.push(f); res(); }, () => res());
+    else { const r = entry.createReader(), all = [];
+      const next = () => r.readEntries(async es => { if (!es.length) { for (const x of all) await walk(x); res(); } else { all.push(...es); next(); } }, () => res());
+      next(); }
+  });
+  for (const it of items) await walk(it);
+  return out;
+}
+
+document.getElementById('texdir').addEventListener('change', e => addTextures(e.target.files));
+
+// Fullscreen: native when allowed, otherwise ask the parent page to expand the frame
+const fsBtn = document.getElementById('fs'); let parentFull = false;
+const setFsUI = on => { controls.enableZoom = on; document.getElementById('hintTxt').textContent = on ? 'Drag to rotate · Scroll to zoom · Right-click to pan' : 'Drag to rotate · Right-click to pan · Zoom in fullscreen'; fsBtn.querySelector('i').className = on ? 'ph ph-corners-in' : 'ph ph-corners-out'; fsBtn.querySelector('span').textContent = on ? 'Exit' : 'Fullscreen'; };
+fsBtn.onclick = async () => {
+  if (document.fullscreenElement) { document.exitFullscreen(); return; }
+  if (parentFull) { parentFull = false; parent.postMessage({ type: 'viewer-fullscreen', on: false }, '*'); setFsUI(false); return; }
+  try { await document.documentElement.requestFullscreen(); }
+  catch (e) { parentFull = true; parent.postMessage({ type: 'viewer-fullscreen', on: true }, '*'); setFsUI(true); }
+};
+document.addEventListener('fullscreenchange', () => setFsUI(!!document.fullscreenElement));
+addEventListener('keydown', e => { if (e.key === 'Escape' && parentFull) fsBtn.click(); });
+if (new URLSearchParams(location.search).get('full') === '1') { parentFull = true; setFsUI(true); fsBtn.querySelector('span').textContent = 'Close'; fsBtn.querySelector('i').className = 'ph ph-x'; }
+addEventListener('message', e => { if (e.data && e.data.type === 'viewer-exit' && parentFull) { parentFull = false; setFsUI(false); }
+  if (e.data && e.data.type === 'viewer-open' && model) { hidden.clear(); soloWheel = false; applyTransparency(); renderMats(); shot('34', 1); } });
+canvas.addEventListener('pointerdown', () => { controls.autoRotate = false; spin.classList.remove('on'); });
+
+// Auto-load from the project: models/car.zip, models/car.glb, models/car.fbx
+(async () => {
+  const bootDone = () => document.body.classList.remove('booting');
+  const bt = document.getElementById('bootTxt');
+  for (const u of ['models/car.zip', 'models/car.glb', 'models/car.fbx']) {
+    try {
+      const r = await fetch(u); if (!r.ok) continue;
+      bt.textContent = 'Loading F1 model…';
+      if (u.endsWith('.zip')) { const b = await r.blob(); bt.textContent = 'Unpacking model & textures…'; await handleFiles([new File([b], 'car.zip')]); }
+      else await load(u, u.split('.').pop());
+      bootDone(); return;
+    } catch (e) {}
+  }
+  try {
+    const m = await DB.get('model'); if (!m || !m.length) return;
+    restoring = true; bt.textContent = 'Loading F1 model…';
+    await handleEntries(m);
+    const t = await DB.get('textures'); if (t && t.length) { bt.textContent = 'Applying textures…'; await addTextures(null, t); }
+  } catch (e) { console.warn(e); } finally { restoring = false; bootDone(); }
+})();
+let visible = true;
+new IntersectionObserver(([e]) => { visible = e.isIntersecting; renderer.setAnimationLoop(visible && !document.hidden ? tick : null); }, { threshold: 0.01 }).observe(canvas);
+document.addEventListener('visibilitychange', () => renderer.setAnimationLoop(visible && !document.hidden ? tick : null));
+// Poster snapshot: 3/4 render composited over the studio backdrop
+async function makePoster() {
+  try { const d = await window.__snapshot(1600, 900); if (!d) return;
+    try { localStorage.setItem('pt-viewer-poster', d); } catch (e) {}
+    parent.postMessage({ type: 'viewer-poster', src: d }, '*'); return d; } catch (e) { console.warn(e); }
+}
+window.__snapshot = async (w = 1600, hgt = 900) => {
+  if (!model) return null;
+  const prevSize = renderer.getSize(new THREE.Vector2()), prevPR = renderer.getPixelRatio(), prevAspect = camera.aspect;
+  const p0 = camera.position.clone(), t0 = controls.target.clone();
+  hidden.clear(); soloWheel = false; applyTransparency();
+  shot('34', 1); tween && tween(performance.now() + 10);
+  renderer.setPixelRatio(1); renderer.setSize(w, hgt, false); camera.aspect = w / hgt; camera.updateProjectionMatrix(); controls.update();
+  renderer.render(scene, camera);
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = hgt; const g = cv.getContext('2d');
+  const lin = g.createLinearGradient(0, 0, 0, hgt); lin.addColorStop(0, '#151726'); lin.addColorStop(0.65, '#11131d'); lin.addColorStop(1, '#0d0e16');
+  g.fillStyle = lin; g.fillRect(0, 0, w, hgt);
+  const glow = (x, y, r, c) => { const rg = g.createRadialGradient(x, y, 0, x, y, r); rg.addColorStop(0, c); rg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = rg; g.fillRect(0, 0, w, hgt); };
+  glow(w * 0.5, hgt * 0.38, w * 0.45, 'rgba(42,43,72,0.9)'); glow(w * 0.15, hgt * 0.2, w * 0.35, 'rgba(120,100,220,0.28)'); glow(w * 0.88, hgt * 0.25, w * 0.35, 'rgba(80,170,210,0.2)');
+  g.drawImage(renderer.domElement, 0, 0, w, hgt);
+  const vg = g.createRadialGradient(w / 2, hgt * 0.45, w * 0.35, w / 2, hgt * 0.45, w * 0.75); vg.addColorStop(0, 'rgba(8,9,14,0)'); vg.addColorStop(1, 'rgba(8,9,14,0.75)'); g.fillStyle = vg; g.fillRect(0, 0, w, hgt);
+  renderer.setPixelRatio(prevPR); renderer.setSize(prevSize.x, prevSize.y, false); camera.aspect = prevAspect; camera.updateProjectionMatrix();
+  camera.position.copy(p0); controls.target.copy(t0);
+  return cv.toDataURL('image/jpeg', 0.92);
+};
+function tick(now) { if (tween) tween(now || performance.now()); controls.update(); renderer.render(scene, camera); }
+renderer.setAnimationLoop(tick);
+
+
+</script>
+</body>
+</html>
